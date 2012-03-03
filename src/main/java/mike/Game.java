@@ -14,13 +14,16 @@ import mike.Motion.Status;
 
 /**
  * Fix energylossthroughbounce at 1
- * Fix stop moving when slow in one direction
- * Circular gravity mode?
+ * Circular gravity mode? Decide what the game should be
+ * Abstract Motion - create MotionX and MotionY children if want to use gravity and friction
+ * Fix when to stop moving
  * @author spellm01
  *
  */
 public class Game extends Applet implements Runnable {
-	
+
+	private static final long serialVersionUID = -3248452394993145828L;
+
 	private final double accelerationDueToGravity = 9.80665;
 	
 	private final int widthPx = 800;
