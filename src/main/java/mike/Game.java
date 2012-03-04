@@ -14,7 +14,7 @@ import mike.Motion.Status;
 
 /**
  * Fix energylossthroughbounce at 1
- * Circular gravity mode? Decide what the game should be
+ * Circular gravity mode? Decide what the game should be - scroll background in x direction?
  * Abstract Motion - create MotionX and MotionY children if want to use gravity and friction
  * Fix when to stop moving
  * @author spellm01
@@ -33,7 +33,7 @@ public class Game extends Applet implements Runnable {
 	private final double initVelocityY = 0;
 	private final double accelerationX = 0;
 	private final double accelerationY = accelerationDueToGravity;
-	private final double energyLossThroughBounce = 1;
+	private final double energyLossThroughBounce = 0.7;
 	private final double friction = 0.1;
 	private final double pxToMetres = heightMetres/(double)heightPx;
 	
