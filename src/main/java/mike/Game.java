@@ -15,6 +15,7 @@ import mike.Motion.Status;
 /**
  * Fix energylossthroughbounce at 1
  * Circular gravity mode? Decide what the game should be - scroll background in x direction?
+ * Create Ball class to allow multiple balls - Objects such as planks?
  * Abstract Motion - create MotionX and MotionY children if want to use gravity and friction
  * Fix when to stop moving
  * @author spellm01
