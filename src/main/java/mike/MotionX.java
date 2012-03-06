@@ -18,7 +18,7 @@ public class MotionX extends Motion {
 	}
 	
 	public int getPosWithFriction(int pos, double friction) {
-		return getNewPos();
+		return updatePosition();
 //		double velocity = initVelocity + (acceleration * getTimeMoving());
 //		displacement = initDisplacement + (getTimeMoving() * ((velocity + initVelocity) / 2));
 //		applyFriction(friction, velocity);

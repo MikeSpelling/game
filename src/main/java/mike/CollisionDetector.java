@@ -20,26 +20,21 @@ public class CollisionDetector {
 	public void detectCollisions(List<Ball> balls) {
 		for (Ball ball : balls) {
 			detectBoundary(ball);
-		}
-		
+		}		
 	}
 	
 	private void detectBoundary(Ball ball) {
 		if (ball.x > right) {
-			ball.x = right;
-			ball.getMotionX().bounce(energyLossThroughBounce, ball.x, right);
+			ball.collideX(energyLossThroughBounce, right);
 		}
 		else if (ball.x < left) {
-			ball.x = left;
-			ball.getMotionX().bounce(energyLossThroughBounce, ball.x, left);
+			ball.collideX(energyLossThroughBounce, left);
 		}
 		if (ball.y > bottom) {
-			ball.y = bottom;
-			ball.getMotionY().bounce(energyLossThroughBounce, ball.y, bottom);
+			ball.collideY(energyLossThroughBounce, bottom);
 		}
 		else if (ball.y < top) {
-			ball.y = top;
-			ball.getMotionY().bounce(energyLossThroughBounce, ball.y, top);
+			ball.collideY(energyLossThroughBounce, top);
 		}
 	}
 

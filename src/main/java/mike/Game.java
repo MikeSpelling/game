@@ -46,13 +46,13 @@ public class Game extends Applet implements Runnable {
 	public void init() {
 		// Defaults
 		int radius = 15;
-		double energyLossThroughBounce = 0.7;
+		double energyLossThroughBounce = 0.5;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
 		double accelerationX = 0;
 		double accelerationY = accelerationDueToGravity;
-		int numBalls = 3;
+		int numBalls = 1;
 		
 		// Load parameters
 		String paramRadius = this.getParameter("Radius");
@@ -109,6 +109,9 @@ public class Game extends Applet implements Runnable {
 	
 	// Overidden run method for thread
 	public void run() {
+		for (Ball ball : balls) {
+			ball.startMotion();
+		}
 		while(true) {
 			repaint(); // Calls update, then paint
 			
@@ -116,11 +119,9 @@ public class Game extends Applet implements Runnable {
 			catch (InterruptedException ex) {}
 			
 			for (Ball ball : balls) {
-				ball.x = ball.getMotionX().getNewPos();
-				ball.y = ball.getMotionY().getNewPos();
+				ball.updatePosition();
 			}
-			collisionDetector.detectCollisions(balls);
-			
+			collisionDetector.detectCollisions(balls);			
 		}
 	}
 	
@@ -136,15 +137,14 @@ public class Game extends Applet implements Runnable {
 	public void paint (Graphics buffer) {
 		buffer.drawImage(backgroundImage, 0, 0, widthPx, heightPx, this);
 		for (Ball ball : balls) {
-			buffer.fillOval (ball.x - ball.getRadius(), ball.y - ball.getRadius(), 
-					2 * ball.getRadius(), 2 * ball.getRadius());
+			buffer.fillOval (ball.x - ball.radius, ball.y - ball.radius, 
+					2 * ball.radius, 2 * ball.radius);
 		}
 	}
 	
 	public boolean mouseDown (Event e, int x, int y) {
 		for (Ball ball : balls) {
-			ball.getMotionX().applyForce(ball.x, x);
-			ball.getMotionY().applyForce(ball.y, y);
+			ball.applyForce(x, y);
 		}
 		return true; // Have to return something
 	}
@@ -157,7 +157,9 @@ public class Game extends Applet implements Runnable {
 
 		}	
 		else if (key == 32) { // Space bar
-			
+			for (Ball ball : balls) {
+				ball.stopMotion();
+			}
 		}		
 		return true;
 	}
