@@ -11,11 +11,12 @@ import java.util.List;
 
 
 /**
- * Circular gravity mode? Decide what the game should be - scroll background in x direction?
+ * Simplify SUVATs
  * Fix energylossthroughbounce at 1
- * Allow multiple balls - Objects such as planks?
- * Abstract Motion - create MotionX and MotionY children if want to use gravity and friction
- * Fix when to stop moving - need mass?
+ * Fix when to stop moving - need mass/friction?
+ * Collision detect balls
+ * Circular gravity mode? Decide what the game should be - scroll background in x direction?
+ * Allow objects such as planks?
  * @author spellm01
  *
  */
