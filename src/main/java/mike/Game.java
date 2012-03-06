@@ -51,7 +51,7 @@ public class Game extends Applet implements Runnable {
 		double initialVelocityY = 0;
 		double accelerationX = 0;
 		double accelerationY = accelerationDueToGravity;
-		int numBalls = 1;
+		int numBalls = 3;
 		
 		// Load parameters
 		String paramRadius = this.getParameter("Radius");
