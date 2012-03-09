@@ -13,20 +13,41 @@ public class MotionX extends Motion {
 			System.out.println("Motion X with initPos: " + pos + ", pxToMetres: " + pxToMetres + ", initDisplacement: " + (pos*pxToMetres) + ", acceleration: " + acceleration + ", initVelocity: " + initVelocity + ", status: " + status);
 	}
 	
-	private void applyFriction(double friction, double velocity) {
-		// TODO
-	}
-	
-	public int getPosWithFriction(int pos, double friction) {
-		return updatePosition();
-//		double velocity = initVelocity + (acceleration * getTimeMoving());
-//		displacement = initDisplacement + (getTimeMoving() * ((velocity + initVelocity) / 2));
-//		applyFriction(friction, velocity);
-//		if(Math.abs(velocity) < 1.5) {
-//			velocity = 0;
+	public void bounce(double energyLossThroughBounce, int boundary) {
+		// TODO - Work out how best to stop and boundary interactions
+		// Calculate velocity as hits boundary, rather than past boundary
+//		double distanceBeyondBoundary = displacement-(boundary*pxToMetres);
+//		double velocityAsHitsBoundarySquared = (velocity*velocity)-(2*acceleration*distanceBeyondBoundary);
+//		if (velocityAsHitsBoundarySquared < 0 && status == Status.MOVING) rest();
+//		else if (status == Status.MOVING){
+//			double velocityAsHitsBoundary = Math.sqrt(velocityAsHitsBoundarySquared);
+//			double bouncedVelocity = velocityAsHitsBoundary * -1 * energyLossThroughBounce;
+//			double timePastBoundary = (velocity-velocityAsHitsBoundary)/acceleration;
+//			double newDisplacement = (boundary*pxToMetres) + ((bouncedVelocity*timePastBoundary) + ((acceleration*timePastBoundary*timePastBoundary)/2));
+//			double newVelocity = bouncedVelocity + (acceleration*timePastBoundary);
+			//timeLastUpdated = System.currentTimeMillis();
+//			System.out.println("Velocity: " + velocity +
+//					", displacement: " + displacement +
+//					", distanceBeyondBoundary: " + distanceBeyondBoundary +
+//					", velocityAsHitsBoundary: " + velocityAsHitsBoundary +
+//					", bouncedVelocity: " + bouncedVelocity +
+//					", timePastBoundary: " + timePastBoundary + 
+//					", newDisplacement: " + newDisplacement +
+//					", newVelocity: " + newVelocity);
+			double distancePastBoundary = getDisplacement()-(boundary*getPxToMetres());
+			double velocityPastBoundary = getVelocity() + (getAcceleration() * dt());
+			double timeDifference = distancePastBoundary/velocityPastBoundary;
+			double velocityAtBoundary = getVelocity() + (getAcceleration() * (dt()-timeDifference));
+			setVelocity((velocityAtBoundary*-1) * energyLossThroughBounce);
+			setDisplacement(boundary * getPxToMetres());
+			setTimeLastUpdated(System.nanoTime());
+//		}
+
+//		if(status == Status.MOVING ){	
+//			if(Game.DEBUG) System.out.println("STOPPED");
 //			stopMovement(pos);
 //		}
-//		return (int)(displacement*metresToPx);
+		//bounceAudio.play();
 	}
 
 }

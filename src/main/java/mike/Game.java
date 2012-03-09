@@ -45,14 +45,18 @@ public class Game extends Applet implements Runnable {
 	// Method is called the first time you enter the HTML site with the applet
 	public void init() {
 		// Defaults
-		int radius = 15;
-		double energyLossThroughBounce = 0.5;
+		int radius = 30;
+		double energyLossTop = 0.5;
+		double energyLossBottom = 0.5;
+		double energyLossLeft = 0.5;
+		double energyLossRight = 0.5;
+		double energyLossCollision = 0.8;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
 		double accelerationX = 0;
 		double accelerationY = accelerationDueToGravity;
-		int numBalls = 1;
+		int numBalls = 2;
 		
 		// Load parameters
 		String paramRadius = this.getParameter("Radius");
@@ -82,24 +86,28 @@ public class Game extends Applet implements Runnable {
 		bufferGraphics = bufferImage.getGraphics();
 		
 		// Create boundary detector
-		int boundaryTop = radius;
-		int boundaryBottom = heightPx-radius;
-		int boundaryLeft = radius;
-		int boundaryRight = widthPx-radius;
-		collisionDetector = new CollisionDetector(boundaryTop, boundaryBottom, boundaryLeft, boundaryRight, 
-				energyLossThroughBounce);
+		int boundaryTop = 0;
+		int boundaryBottom = heightPx;
+		int boundaryLeft = 0;
+		int boundaryRight = widthPx;
+		collisionDetector = new CollisionDetector(boundaryTop, energyLossTop, boundaryBottom, energyLossBottom,
+				boundaryLeft, energyLossLeft, boundaryRight, energyLossRight, energyLossCollision);
 		
-		// Calculate positioning
-		double pxToMetres = heightMetres/(double)heightPx;		
-		int xSpacing = (widthPx/numBalls);
-		int x = (widthPx/numBalls)/2;
-		int y = radius + (heightPx/4);
-			
-		// Create balls
-		for (int i = 0; i < numBalls; i++) {
-			balls.add(new Ball(x + (xSpacing*i), y, radius,
-					new MotionX(x + (xSpacing*i), initialVelocityX, accelerationX, pxToMetres, bounceAudio), 
-					new MotionY(y, initialVelocityY, accelerationY, pxToMetres, bounceAudio)));
+		if (numBalls > 0) {
+			// Calculate positioning
+			double pxToMetres = heightMetres/(double)heightPx;		
+			int xSpacing = (widthPx/numBalls);
+			int x = (widthPx/numBalls)/2;
+			int y = radius + (heightPx/4);
+				
+			// Create balls
+			for (int i = 0; i < numBalls; i++) {
+				float r, b, g; r = g = b = (float)(i)/(float)(numBalls);
+				int newRadius = (radius*(1+i))/numBalls;
+				balls.add(new Ball(x + (xSpacing*i), y, newRadius, new Color(r, g, b),
+						new MotionX(x + (xSpacing*i), initialVelocityX, accelerationX, pxToMetres, bounceAudio), 
+						new MotionY(y, initialVelocityY, accelerationY, pxToMetres, bounceAudio)));
+			}
 		}
 		
 		// Start game
@@ -107,7 +115,7 @@ public class Game extends Applet implements Runnable {
 		thread.start();
 	}
 	
-	// Overidden run method for thread
+	// Overridden run method for thread
 	public void run() {
 		for (Ball ball : balls) {
 			ball.startMotion();
@@ -127,7 +135,6 @@ public class Game extends Applet implements Runnable {
 	
 	// Called before paint with repaint()
 	public void update(Graphics screenGraphics) {
-		bufferGraphics.setColor(Color.RED);
 		paint(bufferGraphics);
 
 		// Draw image on the screen
@@ -137,6 +144,7 @@ public class Game extends Applet implements Runnable {
 	public void paint (Graphics buffer) {
 		buffer.drawImage(backgroundImage, 0, 0, widthPx, heightPx, this);
 		for (Ball ball : balls) {
+			buffer.setColor(ball.color);
 			buffer.fillOval (ball.x - ball.radius, ball.y - ball.radius, 
 					2 * ball.radius, 2 * ball.radius);
 		}

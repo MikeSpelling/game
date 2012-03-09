@@ -4,7 +4,7 @@ import java.applet.AudioClip;
 
 public abstract class Motion {
 	
-	private final double moveFactor = 2;
+	protected final double moveFactor = 2;
 	private final double initialAcceleration;
 	private long timeLastUpdated;
 	private double pxToMetres;
@@ -13,10 +13,12 @@ public abstract class Motion {
 	private double acceleration;
 	private double displacement;
 	
-	public enum Status {STOPPED, MOVING};
+	public static enum Status {STOPPED, MOVING};
 	public Status status;
 	
 	AudioClip bounceAudio;
+	
+	public abstract void bounce(double energyLossThroughBounce, int boundary);
 	
 	public Motion(int pos, double velocity, double acceleration, double pxToMetres, AudioClip bounceAudio) {
 		this.pxToMetres = pxToMetres;
@@ -26,53 +28,15 @@ public abstract class Motion {
 		this.acceleration = initialAcceleration;
 		this.metresToPx = 1/this.pxToMetres;
 		this.bounceAudio = bounceAudio;
-		this.timeLastUpdated = System.currentTimeMillis();
+		this.timeLastUpdated = System.nanoTime();
 	}
 	
 	public int updatePosition() {
 		velocity = velocity + (acceleration * dt());
 		displacement += (velocity*dt()) + ((acceleration*dt()*dt())/2);
 		int pos = (int)(displacement*metresToPx);
-		timeLastUpdated = System.currentTimeMillis();
+		timeLastUpdated = System.nanoTime();
 		return pos;
-	}
-
-	public void bounce(double energyLossThroughBounce, double boundary) {
-		// TODO - Work out how best to stop and boundary interactions
-		// Calculate velocity as hits boundary, rather than past boundary
-//		double distanceBeyondBoundary = displacement-(boundary*pxToMetres);
-//		double velocityAsHitsBoundarySquared = (velocity*velocity)-(2*acceleration*distanceBeyondBoundary);
-//		if (velocityAsHitsBoundarySquared < 0 && status == Status.MOVING) rest();
-//		else if (status == Status.MOVING){
-//			double velocityAsHitsBoundary = Math.sqrt(velocityAsHitsBoundarySquared);
-//			double bouncedVelocity = velocityAsHitsBoundary * -1 * energyLossThroughBounce;
-//			double timePastBoundary = (velocity-velocityAsHitsBoundary)/acceleration;
-//			double newDisplacement = (boundary*pxToMetres) + ((bouncedVelocity*timePastBoundary) + ((acceleration*timePastBoundary*timePastBoundary)/2));
-//			double newVelocity = bouncedVelocity + (acceleration*timePastBoundary);
-			//timeLastUpdated = System.currentTimeMillis();
-//			System.out.println("Velocity: " + velocity +
-//					", displacement: " + displacement +
-//					", distanceBeyondBoundary: " + distanceBeyondBoundary +
-//					", velocityAsHitsBoundary: " + velocityAsHitsBoundary +
-//					", bouncedVelocity: " + bouncedVelocity +
-//					", timePastBoundary: " + timePastBoundary + 
-//					", newDisplacement: " + newDisplacement +
-//					", newVelocity: " + newVelocity);
-			
-			double distancePastBoundary = displacement-(boundary*pxToMetres);
-			double velocityPastBoundary = velocity + (acceleration * dt());
-			double timeDifference = distancePastBoundary/velocityPastBoundary;
-			double velocityAtBoundary = velocity + (acceleration * (dt()-timeDifference));
-			velocity = (velocityAtBoundary*-1) * energyLossThroughBounce;
-			displacement = boundary * pxToMetres;
-			timeLastUpdated = System.currentTimeMillis();
-//		}
-
-//		if(status == Status.MOVING ){	
-//			if(Game.DEBUG) System.out.println("STOPPED");
-//			stopMovement(pos);
-//		}
-		//bounceAudio.play();
 	}
 	
 	public void applyForce(int forceVector) {
@@ -81,11 +45,38 @@ public abstract class Motion {
 		startMotion();
 	}
 	
+	public void collide(int radius, int positionHit, double energyLossCollision) {
+		int multiplier = 1;
+		double newDisplacement = 1;
+		if (velocity >= 0) {
+			if (displacement >= (positionHit*pxToMetres))
+				newDisplacement = (positionHit*pxToMetres) + (radius*pxToMetres);
+			else {
+				multiplier = -1;;
+				newDisplacement = (positionHit*pxToMetres) - (radius*pxToMetres);
+			}
+		}
+		else {
+			if (displacement >= (positionHit*pxToMetres)) {
+				multiplier = -1;
+				newDisplacement = (positionHit*pxToMetres) + (radius*pxToMetres);
+			}
+			else
+				newDisplacement = (positionHit*pxToMetres) - (radius*pxToMetres);
+		}
+		double newVelocity = (velocity*multiplier) * energyLossCollision;
+//		System.out.println("Velocity: " + velocity + ", newVelocity: " + newVelocity + 
+//				", DisplacementPx: " + (displacement*metresToPx) + ", newDisplacementPx: " + (newDisplacement*metresToPx));
+		displacement = newDisplacement;
+		velocity = newVelocity;
+		setTimeLastUpdated(System.nanoTime());
+	}
+	
 	public void startMotion() {
 		if(Math.abs(velocity) > 0 || Math.abs(acceleration) > 0) {
 			this.acceleration = initialAcceleration;
 			status = Status.MOVING;
-			timeLastUpdated = System.currentTimeMillis();
+			timeLastUpdated = System.nanoTime();
 		}
 		else {
 			status = Status.STOPPED;
@@ -102,8 +93,56 @@ public abstract class Motion {
 		acceleration = 0;
 	}
 	
-	private double dt() {
-		return (System.currentTimeMillis() - (double)(timeLastUpdated))/(double)(1000);
+	protected double dt() {
+		return (double)(System.nanoTime() - timeLastUpdated)*(double)(0.000000001);
+	}
+	
+	protected void setVelocity(double velocity) {
+		this.velocity = velocity;
+	}
+	
+	protected void setAcceleration(double acceleration) {
+		this.acceleration = acceleration;
+	}
+	
+	protected void setDisplacement(double displacement) {
+		this.displacement = displacement;
+	}
+	
+	protected void setTimeLastUpdated(long timeLastUpdated) {
+		this.timeLastUpdated = timeLastUpdated;
+	}
+	
+	protected void setPxToMetres(double pxToMetres) {
+		this.pxToMetres = pxToMetres;
+	}
+	
+	protected void setMetresToPx(double metresToPx) {
+		this.metresToPx = metresToPx;
+	}
+	
+	protected double getVelocity() {
+		return velocity;
+	}
+	
+	protected double getAcceleration() {
+		return acceleration;
+	}
+	
+	protected double getDisplacement() {
+		return displacement;
+	}
+	
+	protected long getTimeLastUpdated() {
+		return timeLastUpdated;
+	}
+
+	protected double getPxToMetres() {
+		return pxToMetres;
+	}
+
+	protected double getMetresToPx() {
+		return metresToPx;
 	}
 
 }
