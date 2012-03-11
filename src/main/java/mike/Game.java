@@ -45,11 +45,11 @@ public class Game extends Applet implements Runnable {
 	public void init() {
 		// Defaults
 		int radius = 15;
-		double energyLossTop = 0.7;
-		double energyLossBottom = 0.7;
-		double energyLossLeft = 0.7;
-		double energyLossRight = 0.7;
-		double energyLossCollision = 0.8;
+		double energyLossTop = 1;
+		double energyLossBottom = 1;
+		double energyLossLeft = 1;
+		double energyLossRight = 1;
+		double energyLossCollision = 1;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;

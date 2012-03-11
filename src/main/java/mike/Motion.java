@@ -3,8 +3,8 @@ package mike;
 import java.applet.AudioClip;
 
 public abstract class Motion {
-	
-	protected final double moveFactor = 2;
+
+	private final double moveFactor = 2;
 	private final double initialAcceleration;
 	private long timeLastUpdated;
 	private double pxToMetres;
@@ -12,14 +12,14 @@ public abstract class Motion {
 	private double velocity;
 	private double acceleration;
 	private double displacement;
-	
+
 	public static enum Status {STOPPED, MOVING};
 	public Status status;
-	
-	AudioClip bounceAudio;
-	
+
+	private AudioClip bounceAudio;
+
 	public abstract void bounce(double energyLossThroughBounce, int boundary);
-	
+
 	public Motion(int pos, double velocity, double acceleration, double pxToMetres, AudioClip bounceAudio) {
 		this.pxToMetres = pxToMetres;
 		this.displacement = pos*this.pxToMetres;
@@ -30,21 +30,22 @@ public abstract class Motion {
 		this.bounceAudio = bounceAudio;
 		this.timeLastUpdated = System.nanoTime();
 	}
-	
+
 	public int updatePosition() {
-		velocity = velocity + (acceleration * dt());
+		// Velocity = U at this point so V = Ut + (at^2)/2
 		displacement += (velocity*dt()) + ((acceleration*dt()*dt())/2);
-		int pos = (int)(displacement*metresToPx);
+		// V = U + at
+		velocity = velocity + (acceleration * dt());
 		timeLastUpdated = System.nanoTime();
-		return pos;
+		return (int)(displacement*metresToPx);
 	}
-	
+
 	public void applyForce(int forceVector) {
 		velocity = (forceVector*pxToMetres)*moveFactor;
 		this.acceleration = initialAcceleration;
 		startMotion();
 	}
-	
+
 	public void collide(int radius, int positionHit, double energyLossCollision) {
 		int multiplier = 1;
 		double newDisplacement = 1;
@@ -65,13 +66,13 @@ public abstract class Motion {
 				newDisplacement = (positionHit*pxToMetres) - (radius*pxToMetres);
 		}
 		double newVelocity = (velocity*multiplier) * energyLossCollision;
-//		System.out.println("Velocity: " + velocity + ", newVelocity: " + newVelocity + 
+//		System.out.println("Velocity: " + velocity + ", newVelocity: " + newVelocity +
 //				", DisplacementPx: " + (displacement*metresToPx) + ", newDisplacementPx: " + (newDisplacement*metresToPx));
 		displacement = newDisplacement;
 		velocity = newVelocity;
 		setTimeLastUpdated(System.nanoTime());
 	}
-	
+
 	public void startMotion() {
 		if(Math.abs(velocity) > 0 || Math.abs(acceleration) > 0) {
 			this.acceleration = initialAcceleration;
@@ -82,57 +83,57 @@ public abstract class Motion {
 			status = Status.STOPPED;
 		}
 	}
-	
+
 	public void stopMotion() {
 		velocity = 0;
 		status = Status.STOPPED;
 	}
-	
+
 	public void rest() {
 		stopMotion();
 		acceleration = 0;
 	}
-	
+
 	protected double dt() {
 		return (double)(System.nanoTime() - timeLastUpdated)*(double)(0.000000001);
 	}
-	
+
 	protected void setVelocity(double velocity) {
 		this.velocity = velocity;
 	}
-	
+
 	protected void setAcceleration(double acceleration) {
 		this.acceleration = acceleration;
 	}
-	
+
 	protected void setDisplacement(double displacement) {
 		this.displacement = displacement;
 	}
-	
+
 	protected void setTimeLastUpdated(long timeLastUpdated) {
 		this.timeLastUpdated = timeLastUpdated;
 	}
-	
+
 	protected void setPxToMetres(double pxToMetres) {
 		this.pxToMetres = pxToMetres;
 	}
-	
+
 	protected void setMetresToPx(double metresToPx) {
 		this.metresToPx = metresToPx;
 	}
-	
+
 	protected double getVelocity() {
 		return velocity;
 	}
-	
+
 	protected double getAcceleration() {
 		return acceleration;
 	}
-	
+
 	protected double getDisplacement() {
 		return displacement;
 	}
-	
+
 	protected long getTimeLastUpdated() {
 		return timeLastUpdated;
 	}

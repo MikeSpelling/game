@@ -11,7 +11,7 @@ public class MotionY extends Motion {
 		if(Game.DEBUG)
 			System.out.println("Motion Y with initPos: " + pos + ", pxToMetres: " + pxToMetres + ", initDisplacement: " + (pos*pxToMetres) + ", acceleration: " + acceleration + ", initVelocity: " + initVelocity + ", status: " + status);
 	}
-	
+
 	public void bounce(double energyLossThroughBounce, int boundary) {
 		// TODO - Work out how best to stop and boundary interactions
 		// Calculate velocity as hits boundary, rather than past boundary
@@ -30,20 +30,20 @@ public class MotionY extends Motion {
 //					", distanceBeyondBoundary: " + distanceBeyondBoundary +
 //					", velocityAsHitsBoundary: " + velocityAsHitsBoundary +
 //					", bouncedVelocity: " + bouncedVelocity +
-//					", timePastBoundary: " + timePastBoundary + 
+//					", timePastBoundary: " + timePastBoundary +
 //					", newDisplacement: " + newDisplacement +
 //					", newVelocity: " + newVelocity);
-			
+
+//			double velocityPastBoundary = getVelocity() + (getAcceleration() * dt());
+//			double timeDifference = distancePastBoundary/velocityPastBoundary;
+//			double velocityAtBoundary = getVelocity() + (getAcceleration() * (dt()-timeDifference));
 			double distancePastBoundary = getDisplacement()-(boundary*getPxToMetres());
-			double velocityPastBoundary = getVelocity() + (getAcceleration() * dt());
-			double timeDifference = distancePastBoundary/velocityPastBoundary;
-			double velocityAtBoundary = getVelocity() + (getAcceleration() * (dt()-timeDifference));
-			setVelocity((velocityAtBoundary*-1) * energyLossThroughBounce);
-			setDisplacement(boundary * getPxToMetres());
+			setDisplacement(boundary * getPxToMetres() - distancePastBoundary);
+			setVelocity((getVelocity()*-1) * energyLossThroughBounce);
 			setTimeLastUpdated(System.nanoTime());
 //		}
 
-//		if(status == Status.MOVING ){	
+//		if(status == Status.MOVING ){
 //			if(Game.DEBUG) System.out.println("STOPPED");
 //			stopMovement(pos);
 //		}
