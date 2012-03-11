@@ -2,10 +2,12 @@ package mike;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
+
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Image;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,43 +27,40 @@ public class Game extends Applet implements Runnable {
 	private static final long serialVersionUID = -3248452394993145828L;
 
 	public static final double accelerationDueToGravity = 9.80665;
-	
-	private int widthPx = 800;
-	private int heightPx = 600;
-	
+	public final static boolean DEBUG = true;
+
+	private int widthPx;
+	private int heightPx;
+
 	private List<Ball> balls = new ArrayList<Ball>();;
-	
+
 	private CollisionDetector collisionDetector;
-	
-	private AudioClip bounceAudio;
-	
+
 	private Image bufferImage;
 	private Image backgroundImage;
 	private Graphics bufferGraphics;
-	
-	public final static boolean DEBUG = true;
-	
+
 
 	// Method is called the first time you enter the HTML site with the applet
 	public void init() {
 		// Defaults
-		int radius = 30;
-		double energyLossTop = 0.5;
-		double energyLossBottom = 0.5;
-		double energyLossLeft = 0.5;
-		double energyLossRight = 0.5;
+		int radius = 15;
+		double energyLossTop = 0.7;
+		double energyLossBottom = 0.7;
+		double energyLossLeft = 0.7;
+		double energyLossRight = 0.7;
 		double energyLossCollision = 0.8;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
 		double accelerationX = 0;
 		double accelerationY = accelerationDueToGravity;
-		int numBalls = 2;
-		
+		int numBalls = 1;
+
 		// Load parameters
+		heightPx = getHeight();
+		widthPx = getWidth();
 		String paramRadius = this.getParameter("Radius");
-		String paramWidthPx = this.getParameter("WidthPx");
-		String paramHeightPx = this.getParameter("HeightPx");
 		String paramHeightMetres = this.getParameter("HeightMetres");
 		String paramInitialVelocityX = this.getParameter("InitialVelocityX");
 		String paramInitialVelocityY = this.getParameter("InitialVelocityY");
@@ -69,8 +68,6 @@ public class Game extends Applet implements Runnable {
 		String paramAccelerationY = this.getParameter("AccelerationY");
 		String paramNumBalls = this.getParameter("NumBalls");
 		if (paramRadius != null) radius = Integer.parseInt(paramRadius);
-		if (paramWidthPx != null) widthPx = Integer.parseInt(paramWidthPx);
-		if (paramHeightPx != null) heightPx = Integer.parseInt(paramHeightPx);
 		if (paramHeightMetres != null) heightMetres = Integer.parseInt(paramHeightMetres);
 		if (paramInitialVelocityX != null) initialVelocityX = Integer.parseInt(paramInitialVelocityX);
 		if (paramInitialVelocityY != null) initialVelocityY = Integer.parseInt(paramInitialVelocityY);
@@ -79,42 +76,38 @@ public class Game extends Applet implements Runnable {
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
 
 		// Get files
-		bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
+		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
 		backgroundImage = getImage(getCodeBase(), "land.GIF");
-		
+
 		bufferImage = createImage(widthPx, heightPx);
 		bufferGraphics = bufferImage.getGraphics();
-		
+
 		// Create boundary detector
-		int boundaryTop = 0;
-		int boundaryBottom = heightPx;
-		int boundaryLeft = 0;
-		int boundaryRight = widthPx;
-		collisionDetector = new CollisionDetector(boundaryTop, energyLossTop, boundaryBottom, energyLossBottom,
-				boundaryLeft, energyLossLeft, boundaryRight, energyLossRight, energyLossCollision);
-		
+		collisionDetector = new CollisionDetector(0, energyLossTop, heightPx, energyLossBottom,
+				0, energyLossLeft, widthPx, energyLossRight, energyLossCollision);
+
 		if (numBalls > 0) {
 			// Calculate positioning
-			double pxToMetres = heightMetres/(double)heightPx;		
+			double pxToMetres = heightMetres/(double)heightPx;
 			int xSpacing = (widthPx/numBalls);
 			int x = (widthPx/numBalls)/2;
 			int y = radius + (heightPx/4);
-				
+
 			// Create balls
 			for (int i = 0; i < numBalls; i++) {
 				float r, b, g; r = g = b = (float)(i)/(float)(numBalls);
 				int newRadius = (radius*(1+i))/numBalls;
 				balls.add(new Ball(x + (xSpacing*i), y, newRadius, new Color(r, g, b),
-						new MotionX(x + (xSpacing*i), initialVelocityX, accelerationX, pxToMetres, bounceAudio), 
+						new MotionX(x + (xSpacing*i), initialVelocityX, accelerationX, pxToMetres, bounceAudio),
 						new MotionY(y, initialVelocityY, accelerationY, pxToMetres, bounceAudio)));
 			}
 		}
-		
+
 		// Start game
 		Thread thread = new Thread(this);
 		thread.start();
 	}
-	
+
 	// Overridden run method for thread
 	public void run() {
 		for (Ball ball : balls) {
@@ -122,17 +115,17 @@ public class Game extends Applet implements Runnable {
 		}
 		while(true) {
 			repaint(); // Calls update, then paint
-			
+
 			try { Thread.sleep(1);	}
 			catch (InterruptedException ex) {}
-			
+
 			for (Ball ball : balls) {
 				ball.updatePosition();
 			}
-			collisionDetector.detectCollisions(balls);			
+			collisionDetector.detectCollisions(balls);
 		}
 	}
-	
+
 	// Called before paint with repaint()
 	public void update(Graphics screenGraphics) {
 		paint(bufferGraphics);
@@ -140,35 +133,35 @@ public class Game extends Applet implements Runnable {
 		// Draw image on the screen
 		screenGraphics.drawImage(bufferImage, 0, 0, this);
 	}
-	
+
 	public void paint (Graphics buffer) {
 		buffer.drawImage(backgroundImage, 0, 0, widthPx, heightPx, this);
 		for (Ball ball : balls) {
 			buffer.setColor(ball.color);
-			buffer.fillOval (ball.x - ball.radius, ball.y - ball.radius, 
+			buffer.fillOval (ball.x - ball.radius, ball.y - ball.radius,
 					2 * ball.radius, 2 * ball.radius);
 		}
 	}
-	
+
 	public boolean mouseDown (Event e, int x, int y) {
 		for (Ball ball : balls) {
 			ball.applyForce(x, y);
 		}
 		return true; // Have to return something
 	}
-	
+
 	public boolean keyDown (Event e, int key) {
 		if (key == Event.LEFT) {
-			
+
 		}
 		else if (key == Event.RIGHT) {
 
-		}	
+		}
 		else if (key == 32) { // Space bar
 			for (Ball ball : balls) {
 				ball.stopMotion();
 			}
-		}		
+		}
 		return true;
 	}
 
@@ -186,5 +179,5 @@ public class Game extends Applet implements Runnable {
 	public void destroy() {
 
 	}
-	
+
 }
