@@ -3,6 +3,7 @@ package mike;
 import java.util.List;
 
 public class CollisionDetector {
+	
 	private Boundary top;
 	private Boundary bottom;
 	private Boundary left;
@@ -11,6 +12,7 @@ public class CollisionDetector {
 	
 	public CollisionDetector(int top, double energyLossTop, int bottom, double energyLossBottom, 
 			int left, double energyLossLeft, int right, double energyLossRight, double energyLossCollision) {
+		
 		this.top = new Boundary(top, energyLossTop);
 		this.bottom = new Boundary(bottom, energyLossBottom);
 		this.left = new Boundary(left, energyLossLeft);
@@ -40,17 +42,17 @@ public class CollisionDetector {
 		int boundaryLeft = left.position + ball.radius;
 		int boundaryRight = right.position - ball.radius;
 		
-		if (ball.x > boundaryRight) {
-			ball.hitBoundaryX(right.energyLoss, boundaryRight);
+		if (ball.x >= boundaryRight) {
+			ball.hitBoundaryX(boundaryRight, right.energyLoss);
 		}
-		else if (ball.x < boundaryLeft) {
-			ball.hitBoundaryX(left.energyLoss, boundaryLeft);
+		else if (ball.x <= boundaryLeft) {
+			ball.hitBoundaryX(boundaryLeft, left.energyLoss);
 		}
-		if (ball.y > boundaryBottom) {
-			ball.hitBoundaryY(bottom.energyLoss, boundaryBottom);
+		if (ball.y >= boundaryBottom) {
+			ball.hitBoundaryY(boundaryBottom, bottom.energyLoss);
 		}
-		else if (ball.y < boundaryTop) {
-			ball.hitBoundaryY(top.energyLoss, boundaryTop);
+		else if (ball.y <= boundaryTop) {
+			ball.hitBoundaryY(boundaryTop, top.energyLoss);
 		}
 	}
 	

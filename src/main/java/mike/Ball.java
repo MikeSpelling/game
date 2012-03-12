@@ -15,7 +15,7 @@ public class Ball {
 
 	private final MotionX motionX;
 	private final MotionY motionY;
-	public final int radius;
+	public int radius;
 	public int x;
 	public int y;
 	public Color color;
@@ -62,11 +62,11 @@ public class Ball {
 		y = motionY.updatePosition();
 	}
 
-	public void hitBoundaryX(double energyLossThroughBounce, int boundary) {
+	public void hitBoundaryX(int boundary, double energyLossThroughBounce) {
 		motionX.bounce(energyLossThroughBounce, boundary);
 	}
 
-	public void hitBoundaryY(double energyLossThroughBounce, int boundary) {
+	public void hitBoundaryY(int boundary, double energyLossThroughBounce) {
 		motionY.bounce(energyLossThroughBounce, boundary);
 	}
 
