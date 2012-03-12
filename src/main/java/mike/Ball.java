@@ -125,6 +125,7 @@ public class Ball {
 
 		// Calculate angle between balls
 		double hypoteneuse = Math.sqrt((Math.abs(xDiff)*Math.abs(xDiff))+(Math.abs(yDiff)*Math.abs(yDiff)));
+		if (hypoteneuse == 0) return new Point (this.x, this.y);
 		double angle = Math.asin(Math.abs(yDiff)/hypoteneuse);
 
 		// Project x and y lengths using the angle and radius

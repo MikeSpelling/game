@@ -32,17 +32,17 @@ public abstract class Motion {
 	}
 
 	public int updatePosition() {
-		// Velocity = U at this point so V = Ut + (at^2)/2
+		// Velocity = U at this point so S = Ut + (at^2)/2
 		displacement += (velocity*dt()) + ((acceleration*dt()*dt())/2);
 		// V = U + at
 		velocity = velocity + (acceleration * dt());
 		timeLastUpdated = System.nanoTime();
-		return (int)(displacement*metresToPx);
+		return (int)(Math.round(displacement*metresToPx));
 	}
 
 	public void applyForce(int forceVector) {
 		velocity = (forceVector*pxToMetres)*moveFactor;
-		this.acceleration = initialAcceleration;
+		acceleration = initialAcceleration;
 		startMotion();
 	}
 

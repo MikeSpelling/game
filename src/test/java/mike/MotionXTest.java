@@ -26,9 +26,9 @@ public class MotionXTest {
 		Thread.sleep(1000);
 		motionX.updatePosition();
 
-		assertEquals("Displacement", 100, motionX.getDisplacement());
-		assertEquals("Velocity", 0, motionX.getVelocity());
-		assertEquals("Acceleration", 0, motionX.getAcceleration());
+		assertEquals("Displacement", 100, motionX.getDisplacement(), 0);
+		assertEquals("Velocity", 0, motionX.getVelocity(), 0);
+		assertEquals("Acceleration", 0, motionX.getAcceleration(), 0);
 	}
 
 	@Test

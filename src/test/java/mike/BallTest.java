@@ -290,4 +290,54 @@ public class BallTest {
 		assertEquals("Y Position", expectedY, point.y);
 	}
 	
+	@Test
+	public void testGetPointOfContactOnTop() {
+		
+		int x1 = 100; 		int x2 = 100;
+		int y1 = 100; 		int y2 = 100;
+		int radius1 = 10;	int radius2 = 10;
+		
+		int expectedX = 100;
+		int expectedY = 100;
+		
+		Ball ball = new Ball(x1, y1, radius1, new Color(0), 
+				new MotionX(position, velocity, acceleration, pxToMetres, bounceAudio), 
+				new MotionY(position, velocity, acceleration, pxToMetres, bounceAudio));
+		
+		Ball otherBall = new Ball(x2, y2, radius2, new Color(0), 
+				new MotionX(position, velocity, acceleration, pxToMetres, bounceAudio), 
+				new MotionY(position, velocity, acceleration, pxToMetres, bounceAudio));
+		
+		assertTrue("Balls should intersect", ball.contains(otherBall));
+		Point point = ball.getPointOfContact(otherBall);
+		
+		assertEquals("X Position", expectedX, point.x);
+		assertEquals("Y Position", expectedY, point.y);
+	}
+	
+	@Test
+	public void testGetPointOfContactDifferentRadius() {
+		
+		int x1 = 100; 		int x2 = 120;
+		int y1 = 100; 		int y2 = 120;
+		int radius1 = 10;	int radius2 = 30;
+		
+		int expectedX = 103;
+		int expectedY = 103;
+		
+		Ball ball = new Ball(x1, y1, radius1, new Color(0), 
+				new MotionX(position, velocity, acceleration, pxToMetres, bounceAudio), 
+				new MotionY(position, velocity, acceleration, pxToMetres, bounceAudio));
+		
+		Ball otherBall = new Ball(x2, y2, radius2, new Color(0), 
+				new MotionX(position, velocity, acceleration, pxToMetres, bounceAudio), 
+				new MotionY(position, velocity, acceleration, pxToMetres, bounceAudio));
+		
+		assertTrue("Balls should intersect", ball.contains(otherBall));
+		Point point = ball.getPointOfContact(otherBall);
+		
+		assertEquals("X Position", expectedX, point.x);
+		assertEquals("Y Position", expectedY, point.y);
+	}
+	
 }
