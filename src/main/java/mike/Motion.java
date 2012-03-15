@@ -18,7 +18,7 @@ public abstract class Motion {
 
 	private AudioClip bounceAudio;
 
-	public abstract void bounce(double energyLossThroughBounce, int boundary);
+	public abstract void bounce(double boundary, double energyLossThroughBounce);
 
 	public Motion(int pos, double velocity, double acceleration, double pxToMetres, AudioClip bounceAudio) {
 		this.pxToMetres = pxToMetres;
@@ -32,10 +32,11 @@ public abstract class Motion {
 	}
 
 	public int updatePosition() {
+		double time = dt();
 		// Velocity = U at this point so S = Ut + (at^2)/2
-		displacement += (velocity*dt()) + ((acceleration*dt()*dt())/2);
+		displacement += (velocity*time) + ((acceleration*time*time)/2);
 		// V = U + at
-		velocity = velocity + (acceleration * dt());
+		velocity = velocity + (acceleration * time);
 		timeLastUpdated = System.nanoTime();
 		return (int)(Math.round(displacement*metresToPx));
 	}

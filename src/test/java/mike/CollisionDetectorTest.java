@@ -16,6 +16,7 @@ public class CollisionDetectorTest {
 	
 	CollisionDetector collisionDetector;
 	List<Ball> balls = new ArrayList<Ball>();
+	double pxToMetres = 1;
 	
 	double energyLossTop = 0.1;
 	double energyLossBottom = 0.2;
@@ -42,7 +43,7 @@ public class CollisionDetectorTest {
 		int right = 100;
 		
 		collisionDetector = new CollisionDetector(top, energyLossTop, bottom, energyLossBottom, 
-				left, energyLossLeft, right, energyLossRight, energyLossCollision);
+				left, energyLossLeft, right, energyLossRight, energyLossCollision, pxToMetres);
 		
 		balls.add(ball1); balls.add(ball2); balls.add(ball3); balls.add(ball4); balls.add(ball5);
 	}

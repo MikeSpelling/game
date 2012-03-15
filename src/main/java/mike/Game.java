@@ -27,7 +27,7 @@ public class Game extends Applet implements Runnable {
 	private static final long serialVersionUID = -3248452394993145828L;
 
 	public static final double accelerationDueToGravity = 9.80665;
-	public final static boolean DEBUG = true;
+	public final static boolean DEBUG = false;
 
 	private int widthPx;
 	private int heightPx;
@@ -45,11 +45,11 @@ public class Game extends Applet implements Runnable {
 	public void init() {
 		// Defaults
 		int radius = 15;
-		double energyLossTop = 1;
-		double energyLossBottom = 1;
-		double energyLossLeft = 1;
-		double energyLossRight = 1;
-		double energyLossCollision = 1;
+		double energyLossTop = 0.7;
+		double energyLossBottom = 0.7;
+		double energyLossLeft = 0.7;
+		double energyLossRight = 0.7;
+		double energyLossCollision = 0.85;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
@@ -75,6 +75,8 @@ public class Game extends Applet implements Runnable {
 		if (paramAccelerationY != null) accelerationX = Integer.parseInt(paramAccelerationY);
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
 
+		double pxToMetres = heightMetres/(double)heightPx;
+		
 		// Get files
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
 		backgroundImage = getImage(getCodeBase(), "land.GIF");
@@ -84,11 +86,10 @@ public class Game extends Applet implements Runnable {
 
 		// Create boundary detector
 		collisionDetector = new CollisionDetector(0, energyLossTop, heightPx, energyLossBottom,
-				0, energyLossLeft, widthPx, energyLossRight, energyLossCollision);
+				0, energyLossLeft, widthPx, energyLossRight, energyLossCollision, pxToMetres);
 
 		if (numBalls > 0) {
 			// Calculate positioning
-			double pxToMetres = heightMetres/(double)heightPx;
 			int xSpacing = (widthPx/numBalls);
 			int x = (widthPx/numBalls)/2;
 			int y = radius + (heightPx/4);

@@ -3,6 +3,8 @@ package mike;
 import java.awt.Color;
 import java.awt.Point;
 
+import mike.Motion.Status;
+
 
 /**
  * Class to maintain the position, shape, motion and color
@@ -62,12 +64,12 @@ public class Ball {
 		y = motionY.updatePosition();
 	}
 
-	public void hitBoundaryX(int boundary, double energyLossThroughBounce) {
-		motionX.bounce(energyLossThroughBounce, boundary);
+	public void hitBoundaryX(double boundary, double energyLossThroughBounce) {
+		motionX.bounce(boundary, energyLossThroughBounce);
 	}
 
-	public void hitBoundaryY(int boundary, double energyLossThroughBounce) {
-		motionY.bounce(energyLossThroughBounce, boundary);
+	public void hitBoundaryY(double boundary, double energyLossThroughBounce) {
+		motionY.bounce(boundary, energyLossThroughBounce);
 	}
 
 	/**
@@ -100,10 +102,10 @@ public class Ball {
 //		motionX.collide(this.radius, xPosition, energyLossCollision);
 //		motionY.collide(this.radius, yPosition, energyLossCollision);
 //		otherBall.hitBall(xPosition, yPosition, energyLossCollision);
-		motionX.bounce(energyLossCollision, xPosition);
-		motionY.bounce(energyLossCollision, yPosition);
-		otherBall.motionX.bounce(energyLossCollision, xPosition);
-		otherBall.motionY.bounce(energyLossCollision, yPosition);
+		motionX.bounce(xPosition, energyLossCollision);
+		motionY.bounce(yPosition, energyLossCollision);
+		otherBall.motionX.bounce(xPosition, energyLossCollision);
+		otherBall.motionY.bounce(yPosition, energyLossCollision);
 	}
 
 	/**
@@ -172,6 +174,14 @@ public class Ball {
 	private void hitBall(int xPosition, int yPosition, double energyLossCollision) {
 		motionX.collide(this.radius, xPosition, energyLossCollision);
 		motionY.collide(this.radius, yPosition, energyLossCollision);
+	}
+	
+	public boolean isXMoving() {
+		return motionX.status == Status.MOVING;
+	}
+	
+	public boolean isYMoving() {
+		return motionY.status == Status.MOVING;
 	}
 
 }
