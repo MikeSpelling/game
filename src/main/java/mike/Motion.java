@@ -18,7 +18,6 @@ public abstract class Motion {
 
 	private AudioClip bounceAudio;
 
-	public abstract void bounce(double boundary, double energyLossThroughBounce);
 
 	public Motion(int pos, double velocity, double acceleration, double pxToMetres, AudioClip bounceAudio) {
 		this.pxToMetres = pxToMetres;
@@ -31,14 +30,69 @@ public abstract class Motion {
 		this.timeLastUpdated = System.nanoTime();
 	}
 
-	public int updatePosition() {
+	public double updateDisplacement() {
 		double time = dt();
 		// Velocity = U at this point so S = Ut + (at^2)/2
 		displacement += (velocity*time) + ((acceleration*time*time)/2);
 		// V = U + at
 		velocity = velocity + (acceleration * time);
 		timeLastUpdated = System.nanoTime();
-		return (int)(Math.round(displacement*metresToPx));
+		return displacement;
+	}
+	
+	/**
+	 * Calculate new velocity and displacement based on
+	 * how far the ball has passed the boundary and its
+	 * final speed
+	 * 
+	 * @param boundary
+	 * @param energyLossThroughBounce
+	 * @return
+	 */
+	public double bounce(double boundary, double energyLossThroughBounce) {
+		double distancePastBoundary = displacement-boundary;
+		double velocityAsHitsBoundarySquared = (velocity*velocity)-(2*acceleration*distancePastBoundary);
+		if (Game.DEBUG) {System.out.println("\nboundary: " + boundary +
+				", position: " + displacement +
+				", velocity: " + velocity +
+				", velocityAsHitsBoundarySquared: " + velocityAsHitsBoundarySquared);}
+		if (velocityAsHitsBoundarySquared > 0) {
+			// Get velocity as it hits the boundary (U), working out whether
+			// sqrt should be positive or negative
+			double velocityAsHitsBoundary = Math.sqrt(velocityAsHitsBoundarySquared); // WIll be positive
+			if (velocity < 0) velocityAsHitsBoundary *= -1; // Travelling upwards therefore velocity will be negative
+			
+			// Get time spent travelling past the boundary
+			// displacement/time if no acceleration
+			double timeTravellingPastBoundary = distancePastBoundary/velocity;
+			if (Math.abs(acceleration) > 0) timeTravellingPastBoundary = (velocity-velocityAsHitsBoundary)/acceleration;
+			
+			// Calculate bounced velocity
+			double bouncedVelocity = (-1*velocityAsHitsBoundary) * energyLossThroughBounce;
+			
+			// Extrapolate calculated values for the time past boundary
+			double newVelocity = bouncedVelocity + (acceleration*timeTravellingPastBoundary);
+			if (newVelocity*bouncedVelocity >= 0) { // Must be same positive or negative
+				double newDisplacement = boundary + 
+					((bouncedVelocity)*timeTravellingPastBoundary) + ((acceleration*timeTravellingPastBoundary*timeTravellingPastBoundary)/2);
+				velocity = newVelocity;
+				displacement = newDisplacement;
+			}
+			else { // Already past boundary after bounce
+				stopMotion();
+			}
+			if (Game.DEBUG) { System.out.println("distancePastBoundary: " + distancePastBoundary + 
+						", velocityAsHitsBoundary: " + velocityAsHitsBoundary + 
+						", timeTravellingPastBoundary: " + timeTravellingPastBoundary + 
+						"\nbouncedVelocity: " + bouncedVelocity + 
+						", velocity: " + velocity + 
+						", displacement: " + displacement);}
+		}
+		else { // Something gone wrong?
+			stopMotion();
+		}
+		//bounceAudio.play();
+		return displacement;
 	}
 
 	public void applyForce(int forceVector) {
@@ -54,7 +108,7 @@ public abstract class Motion {
 			if (displacement >= (positionHit*pxToMetres))
 				newDisplacement = (positionHit*pxToMetres) + (radius*pxToMetres);
 			else {
-				multiplier = -1;;
+				multiplier = -1;
 				newDisplacement = (positionHit*pxToMetres) - (radius*pxToMetres);
 			}
 		}
@@ -87,12 +141,8 @@ public abstract class Motion {
 
 	public void stopMotion() {
 		velocity = 0;
-		status = Status.STOPPED;
-	}
-
-	public void rest() {
-		stopMotion();
 		acceleration = 0;
+		status = Status.STOPPED;
 	}
 
 	protected double dt() {

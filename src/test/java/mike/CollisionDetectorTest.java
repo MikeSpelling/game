@@ -18,11 +18,8 @@ public class CollisionDetectorTest {
 	List<Ball> balls = new ArrayList<Ball>();
 	double pxToMetres = 1;
 	
-	double energyLossTop = 0.1;
-	double energyLossBottom = 0.2;
-	double energyLossLeft = 0.3;
-	double energyLossRight = 0.4;
-	double energyLossCollision = 0.5;
+	double energyLossMin = 0.1;
+	double energyLossMax = 0.2;
 	
 	@Mock MotionX motionX;
 	@Mock MotionY motionY;
@@ -37,13 +34,10 @@ public class CollisionDetectorTest {
 	public void before() throws Exception {		
 		MockitoAnnotations.initMocks(this);
 		
-		int top = 0;
-		int left = 0;
-		int bottom = 100;
-		int right = 100;
+		int min = 0;
+		int max = 100;
 		
-		collisionDetector = new CollisionDetector(top, energyLossTop, bottom, energyLossBottom, 
-				left, energyLossLeft, right, energyLossRight, energyLossCollision, pxToMetres);
+		collisionDetector = new CollisionDetector(min, energyLossMin, max, energyLossMin);
 		
 		balls.add(ball1); balls.add(ball2); balls.add(ball3); balls.add(ball4); balls.add(ball5);
 	}

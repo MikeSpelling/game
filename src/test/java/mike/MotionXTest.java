@@ -28,7 +28,7 @@ public class MotionXTest {
 		motionX.startMotion();
 
 		Thread.sleep(1000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 
 		assertEquals("Displacement", 100, motionX.getDisplacement(), 0);
 		assertEquals("Velocity", 0, motionX.getVelocity(), 0);
@@ -47,7 +47,7 @@ public class MotionXTest {
 		long startTime = System.nanoTime();
 
 		Thread.sleep(1000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		double dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		// No acceleration therefore distance = velocity * time
 		double displacement = velocity*dt;
@@ -55,14 +55,14 @@ public class MotionXTest {
 		assertEquals("Displacement", displacement, motionX.getDisplacement(), errorMargin);
 
 		Thread.sleep(1000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		displacement = velocity*dt;
 		assertEquals("Velocity", velocity, motionX.getVelocity(), errorMargin);
 		assertEquals("Displacement", displacement, motionX.getDisplacement(), errorMargin);
 
 		Thread.sleep(3000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		displacement = velocity*dt;
 		assertEquals("Velocity", velocity, motionX.getVelocity(), errorMargin);
@@ -81,7 +81,7 @@ public class MotionXTest {
 		long startTime = System.nanoTime();
 
 		Thread.sleep(1000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		double dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		velocity = dt*acceleration;
 		double displacement = (velocity*dt)/2;
@@ -89,7 +89,7 @@ public class MotionXTest {
 		assertEquals("Displacement", displacement, motionX.getDisplacement(), errorMargin);
 
 		Thread.sleep(1000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		velocity = dt*acceleration;
 		displacement = (velocity*dt)/2;
@@ -97,7 +97,7 @@ public class MotionXTest {
 		assertEquals("Displacement", displacement, motionX.getDisplacement(), errorMargin);
 
 		Thread.sleep(3000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		velocity = dt*acceleration;
 		displacement = (velocity*dt)/2;
@@ -117,7 +117,7 @@ public class MotionXTest {
 		long startTime = System.nanoTime();
 
 		Thread.sleep(1000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		double dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		// V = U + aT
 		double velocity = initVelocity + (acceleration*dt);
@@ -127,7 +127,7 @@ public class MotionXTest {
 		assertEquals("Displacement", displacement, motionX.getDisplacement(), errorMargin);
 
 		Thread.sleep(1000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		velocity = initVelocity + (acceleration*dt);
 		displacement = position + ((initVelocity*dt) + ((acceleration*dt*dt)/2));
@@ -135,7 +135,7 @@ public class MotionXTest {
 		assertEquals("Displacement", displacement, motionX.getDisplacement(), errorMargin);
 
 		Thread.sleep(3000);
-		motionX.updatePosition();
+		motionX.updateDisplacement();
 		dt = (System.nanoTime() - startTime)*nanoToSeconds;
 		velocity = initVelocity + (acceleration*dt);
 		displacement = position + ((initVelocity*dt) + ((acceleration*dt*dt)/2));

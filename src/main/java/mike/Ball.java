@@ -1,5 +1,6 @@
 package mike;
 
+import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Point;
 
@@ -15,8 +16,11 @@ import mike.Motion.Status;
  */
 public class Ball {
 
+	private final double metresToPx;
 	private final MotionX motionX;
 	private final MotionY motionY;
+	private final CollisionDetector collisionDetectorX;
+	private final CollisionDetector collisionDetectorY;
 	public int radius;
 	public int x;
 	public int y;
@@ -25,21 +29,32 @@ public class Ball {
 	/**
 	 * Initialises ball with x, y position, radius, color and
 	 * motion in the x and y plane.
-	 *
+	 * 
 	 * @param x
 	 * @param y
+	 * @param initialVelocityX
+	 * @param initialVelocityY
+	 * @param accelerationX
+	 * @param accelerationY
 	 * @param radius
+	 * @param pxToMetres
+	 * @param bounceAudio
 	 * @param color
-	 * @param motionX
-	 * @param motionY
+	 * @param collisionDetectorX
+	 * @param collisionDetectorY
 	 */
-	public Ball(int x, int y, int radius, Color color, MotionX motionX, MotionY motionY) {
+	public Ball(int x, int y, double initialVelocityX, double initialVelocityY, double accelerationX, double accelerationY, 
+			int radius, double pxToMetres, AudioClip bounceAudio, Color color, 
+			CollisionDetector collisionDetectorX, CollisionDetector collisionDetectorY) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
+		this.motionX = new MotionX(x, initialVelocityX, accelerationX, pxToMetres, bounceAudio);
+		this.motionY = new MotionY(y, initialVelocityY, accelerationY, pxToMetres, bounceAudio);
+		this.metresToPx = 1/pxToMetres;
 		this.color = color;
-		this.motionX = motionX;
-		this.motionY = motionY;
+		this.collisionDetectorX = collisionDetectorX;
+		this.collisionDetectorY = collisionDetectorY;
 		if(Game.DEBUG)
 			System.out.println("Ball created with x: " + x + ", y: " + y + ", radius: " + radius);
 	}
@@ -60,16 +75,34 @@ public class Ball {
 	}
 
 	public void updatePosition() {
-		x = motionX.updatePosition();
-		y = motionY.updatePosition();
-	}
-
-	public void hitBoundaryX(double boundary, double energyLossThroughBounce) {
-		motionX.bounce(boundary, energyLossThroughBounce);
-	}
-
-	public void hitBoundaryY(double boundary, double energyLossThroughBounce) {
-		motionY.bounce(boundary, energyLossThroughBounce);
+		if (isXMoving()) {
+			// Update and retrieve displacements
+			double xDisplacement = motionX.updateDisplacement();		
+			// Detect boundaries and update displacement if hit
+			if (collisionDetectorX.detectBoundary(xDisplacement)) {
+				xDisplacement = motionX.bounce(collisionDetectorX.getBoundary(), collisionDetectorX.getEnergyLoss());
+				// If collided again after bounce, set to be at the boundary
+				if (collisionDetectorX.detectBoundary(xDisplacement)) {
+					motionX.setDisplacement(collisionDetectorX.getBoundary());
+					xDisplacement = motionX.getDisplacement();
+				}
+			}
+			// Convert to px
+			this.x = (int)(Math.round(xDisplacement*metresToPx));
+		}
+		
+		if (isYMoving()) {
+			double yDisplacement = motionY.updateDisplacement();
+			if (collisionDetectorY.detectBoundary(yDisplacement)) {
+				yDisplacement = motionY.bounce(collisionDetectorY.getBoundary(), collisionDetectorY.getEnergyLoss());
+				if (collisionDetectorY.detectBoundary(yDisplacement)) {
+					motionY.setDisplacement(collisionDetectorY.getBoundary());
+					yDisplacement = motionY.getDisplacement();
+				}
+			}
+			this.y = (int)(Math.round(yDisplacement*metresToPx));
+		}
+		
 	}
 
 	/**
@@ -83,6 +116,7 @@ public class Ball {
 		double width = Math.abs(this.x - otherBall.x);
 		double height = Math.abs(this.y - otherBall.y);
 		double length = Math.sqrt((width*width)+(height*height));
+		
 		// Determine if radius' intersect
 		return (radius >= length-otherBall.radius);
 	}
@@ -99,9 +133,6 @@ public class Ball {
 		int xPosition = positionHit.x;
 		int yPosition = positionHit.y;
 
-//		motionX.collide(this.radius, xPosition, energyLossCollision);
-//		motionY.collide(this.radius, yPosition, energyLossCollision);
-//		otherBall.hitBall(xPosition, yPosition, energyLossCollision);
 		motionX.bounce(xPosition, energyLossCollision);
 		motionY.bounce(yPosition, energyLossCollision);
 		otherBall.motionX.bounce(xPosition, energyLossCollision);
@@ -170,11 +201,6 @@ public class Ball {
 		}
 		return new Point(xMidpoint, yMidpoint); // Return midpoint of collision
 	}
-
-	private void hitBall(int xPosition, int yPosition, double energyLossCollision) {
-		motionX.collide(this.radius, xPosition, energyLossCollision);
-		motionY.collide(this.radius, yPosition, energyLossCollision);
-	}
 	
 	public boolean isXMoving() {
 		return motionX.status == Status.MOVING;
@@ -182,6 +208,14 @@ public class Ball {
 	
 	public boolean isYMoving() {
 		return motionY.status == Status.MOVING;
+	}
+	
+	public void setAccelerationX(double acceleration) {
+		motionX.setAcceleration(acceleration);
+	}
+	
+	public void setAccelerationY(double acceleration) {
+		motionY.setAcceleration(acceleration);
 	}
 
 }
