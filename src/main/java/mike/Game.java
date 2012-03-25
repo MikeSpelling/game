@@ -13,10 +13,10 @@ import java.util.List;
 
 
 /**
+ * Colliding balls
  * Friction for x?
  * Tests
  * Circular gravity mode? Decide what the game should be - scroll background in x direction?
- * Apply force
  * Allow objects such as planks?
  * @author spellm01
  *
@@ -26,12 +26,12 @@ public class Game extends Applet implements Runnable {
 	private static final long serialVersionUID = -3248452394993145828L;
 
 	public static final double accelerationDueToGravity = 9.80665;
-	public final static boolean DEBUG = true;
+	public final static boolean DEBUG = false;
 
 	private int widthPx;
 	private int heightPx;
 
-	private List<Ball> balls = new ArrayList<Ball>();;
+	private List<Ball> balls = new ArrayList<Ball>();
 	double energyLossCollision = 0.85;
 
 	private Image bufferImage;
@@ -42,17 +42,18 @@ public class Game extends Applet implements Runnable {
 	// Method is called the first time you enter the HTML site with the applet
 	public void init() {
 		// Defaults
-		int numBalls = 1;
-		int radius = 15;
-		double energyLossTop = 0.8;
-		double energyLossBottom = 0.8;
-		double energyLossLeft = 0.8;
-		double energyLossRight = 0.8;
+		int numBalls = 2;
+		int radius = 20;
+		double energyLossTop = 0.9;
+		double energyLossBottom = 0.9;
+		double energyLossLeft = 0.9;
+		double energyLossRight = 0.9;
+		energyLossCollision = 0.9;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
 		double accelerationX = 0;
-		double accelerationY = accelerationDueToGravity;
+		double accelerationY = 0;//accelerationDueToGravity;
 
 		// Load parameters
 		heightPx = getHeight();
@@ -73,7 +74,7 @@ public class Game extends Applet implements Runnable {
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
 
 		double pxToMetres = heightMetres/(double)heightPx;
-		
+
 		// Get files
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
 		backgroundImage = getImage(getCodeBase(), "land.GIF");
@@ -91,14 +92,15 @@ public class Game extends Applet implements Runnable {
 			for (int i = 0; i < numBalls; i++) {
 				Color color = new Color((float)(i)/(float)(numBalls), (float)(i)/(float)(numBalls), (float)(i)/(float)(numBalls));
 				int newRadius = (radius*(1+i))/numBalls;
+				double mass = (double)(i+1)/10;
 				int xPos = x + (xSpacing*i);
-				CollisionDetector collisionDetectorX = 
+				CollisionDetector collisionDetectorX =
 					new CollisionDetector(newRadius*pxToMetres, energyLossLeft, (widthPx-newRadius)*pxToMetres, energyLossRight);
-				CollisionDetector collisionDetectorY = 
+				CollisionDetector collisionDetectorY =
 					new CollisionDetector(newRadius*pxToMetres, energyLossTop, (heightPx-newRadius)*pxToMetres, energyLossBottom);
-				
-				balls.add(new Ball(xPos, y, initialVelocityX, initialVelocityY, accelerationX, accelerationY, 
-						newRadius, pxToMetres, bounceAudio, color, collisionDetectorX, collisionDetectorY));
+
+				balls.add(new Ball(xPos, y, initialVelocityX, initialVelocityY, accelerationX, accelerationY,
+						newRadius, mass, pxToMetres, bounceAudio, color, collisionDetectorX, collisionDetectorY));
 			}
 		}
 
@@ -121,7 +123,7 @@ public class Game extends Applet implements Runnable {
 			for (Ball ball : balls) {
 				ball.updatePosition();
 			}
-			detectCollisions(balls);
+			detectCollisions();
 		}
 	}
 
@@ -141,17 +143,17 @@ public class Game extends Applet implements Runnable {
 					2 * ball.radius, 2 * ball.radius);
 		}
 	}
-	
+
 	/**
 	 * Detects if any ball currently in a position which
 	 * collides with another ball or a boundary.
 	 * Does not take into account the path of the ball
 	 * which may have crossed another, if both were moving fast
 	 * enough.
-	 * 
+	 *
 	 * @param balls
 	 */
-	private void detectCollisions(List<Ball> balls) {
+	private void detectCollisions() {
 		for (int i = 0; i < balls.size(); i++) {
 			Ball ball = balls.get(i);
 			// Detect collisions with other balls
@@ -161,12 +163,13 @@ public class Game extends Applet implements Runnable {
 					ball.collide(otherBall, energyLossCollision);
 				}
 			}
-		}		
+		}
 	}
 
 	public boolean mouseDown (Event e, int x, int y) {
 		for (Ball ball : balls) {
-			ball.applyForce(x, y);
+			ball.applyForce(x, widthPx, y, heightPx);
+			break; // REMOVE to affect all balls
 		}
 		return true; // Have to return something
 	}

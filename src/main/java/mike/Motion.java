@@ -4,7 +4,6 @@ import java.applet.AudioClip;
 
 public abstract class Motion {
 
-	private final double moveFactor = 2;
 	private final double initialAcceleration;
 	private long timeLastUpdated;
 	private double pxToMetres;
@@ -39,12 +38,12 @@ public abstract class Motion {
 		timeLastUpdated = System.nanoTime();
 		return displacement;
 	}
-	
+
 	/**
 	 * Calculate new velocity and displacement based on
 	 * how far the ball has passed the boundary and its
 	 * final speed
-	 * 
+	 *
 	 * @param boundary
 	 * @param energyLossThroughBounce
 	 * @return
@@ -61,19 +60,19 @@ public abstract class Motion {
 			// sqrt should be positive or negative
 			double velocityAsHitsBoundary = Math.sqrt(velocityAsHitsBoundarySquared); // WIll be positive
 			if (velocity < 0) velocityAsHitsBoundary *= -1; // Travelling upwards therefore velocity will be negative
-			
+
 			// Get time spent travelling past the boundary
 			// displacement/time if no acceleration
 			double timeTravellingPastBoundary = distancePastBoundary/velocity;
 			if (Math.abs(acceleration) > 0) timeTravellingPastBoundary = (velocity-velocityAsHitsBoundary)/acceleration;
-			
+
 			// Calculate bounced velocity
 			double bouncedVelocity = (-1*velocityAsHitsBoundary) * energyLossThroughBounce;
-			
+
 			// Extrapolate calculated values for the time past boundary
 			double newVelocity = bouncedVelocity + (acceleration*timeTravellingPastBoundary);
 			if (newVelocity*bouncedVelocity >= 0) { // Must be same positive or negative
-				double newDisplacement = boundary + 
+				double newDisplacement = boundary +
 					((bouncedVelocity)*timeTravellingPastBoundary) + ((acceleration*timeTravellingPastBoundary*timeTravellingPastBoundary)/2);
 				velocity = newVelocity;
 				displacement = newDisplacement;
@@ -81,11 +80,11 @@ public abstract class Motion {
 			else { // Already past boundary after bounce
 				stopMotion();
 			}
-			if (Game.DEBUG) { System.out.println("distancePastBoundary: " + distancePastBoundary + 
-						", velocityAsHitsBoundary: " + velocityAsHitsBoundary + 
-						", timeTravellingPastBoundary: " + timeTravellingPastBoundary + 
-						"\nbouncedVelocity: " + bouncedVelocity + 
-						", velocity: " + velocity + 
+			if (Game.DEBUG) { System.out.println("distancePastBoundary: " + distancePastBoundary +
+						", velocityAsHitsBoundary: " + velocityAsHitsBoundary +
+						", timeTravellingPastBoundary: " + timeTravellingPastBoundary +
+						"\nbouncedVelocity: " + bouncedVelocity +
+						", velocity: " + velocity +
 						", displacement: " + displacement);}
 		}
 		else { // Something gone wrong?
@@ -95,48 +94,17 @@ public abstract class Motion {
 		return displacement;
 	}
 
-	public void applyForce(int forceVector) {
-		velocity = (forceVector*pxToMetres)*moveFactor;
+	public void applyForce(double force, double mass) {
+
+		velocity = (force/mass)*2;
 		acceleration = initialAcceleration;
 		startMotion();
 	}
 
-	public void collide(int radius, int positionHit, double energyLossCollision) {
-		int multiplier = 1;
-		double newDisplacement = 1;
-		if (velocity >= 0) {
-			if (displacement >= (positionHit*pxToMetres))
-				newDisplacement = (positionHit*pxToMetres) + (radius*pxToMetres);
-			else {
-				multiplier = -1;
-				newDisplacement = (positionHit*pxToMetres) - (radius*pxToMetres);
-			}
-		}
-		else {
-			if (displacement >= (positionHit*pxToMetres)) {
-				multiplier = -1;
-				newDisplacement = (positionHit*pxToMetres) + (radius*pxToMetres);
-			}
-			else
-				newDisplacement = (positionHit*pxToMetres) - (radius*pxToMetres);
-		}
-		double newVelocity = (velocity*multiplier) * energyLossCollision;
-//		System.out.println("Velocity: " + velocity + ", newVelocity: " + newVelocity +
-//				", DisplacementPx: " + (displacement*metresToPx) + ", newDisplacementPx: " + (newDisplacement*metresToPx));
-		displacement = newDisplacement;
-		velocity = newVelocity;
-		setTimeLastUpdated(System.nanoTime());
-	}
-
 	public void startMotion() {
-		if(Math.abs(velocity) > 0 || Math.abs(acceleration) > 0) {
-			this.acceleration = initialAcceleration;
-			status = Status.MOVING;
-			timeLastUpdated = System.nanoTime();
-		}
-		else {
-			status = Status.STOPPED;
-		}
+		this.acceleration = initialAcceleration;
+		status = Status.MOVING;
+		timeLastUpdated = System.nanoTime();
 	}
 
 	public void stopMotion() {
