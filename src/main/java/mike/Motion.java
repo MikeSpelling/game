@@ -95,7 +95,6 @@ public abstract class Motion {
 	}
 
 	public void applyForce(double force, double mass) {
-
 		velocity = (force/mass)*2;
 		acceleration = initialAcceleration;
 		startMotion();

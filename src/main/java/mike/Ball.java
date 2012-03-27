@@ -1,6 +1,5 @@
 package mike;
 
-import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Point;
 
@@ -22,7 +21,7 @@ public class Ball {
 	private final MotionY motionY;
 	private final CollisionDetector collisionDetectorX;
 	private final CollisionDetector collisionDetectorY;
-	private double mass;
+	public double mass;
 	public int radius;
 	public int x;
 	public int y;
@@ -45,16 +44,15 @@ public class Ball {
 	 * @param collisionDetectorX
 	 * @param collisionDetectorY
 	 */
-	public Ball(int x, int y, double initialVelocityX, double initialVelocityY, double accelerationX, double accelerationY,
-			int radius, double mass, double pxToMetres, AudioClip bounceAudio, Color color,
-			CollisionDetector collisionDetectorX, CollisionDetector collisionDetectorY) {
+	public Ball(int x, int y, int radius, double mass, Color color,
+			MotionX motionX, MotionY motionY, CollisionDetector collisionDetectorX, CollisionDetector collisionDetectorY) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
 		this.mass = mass;
-		this.motionX = new MotionX(x, initialVelocityX, accelerationX, pxToMetres, bounceAudio);
-		this.motionY = new MotionY(y, initialVelocityY, accelerationY, pxToMetres, bounceAudio);
-		this.pxToMetres = pxToMetres;
+		this.motionX = motionX;
+		this.motionY = motionY;
+		this.pxToMetres = motionX.getPxToMetres();
 		this.metresToPx = 1/pxToMetres;
 		this.color = color;
 		this.collisionDetectorX = collisionDetectorX;
@@ -63,52 +61,41 @@ public class Ball {
 			System.out.println("Ball created with x: " + x + ", y: " + y + ", radius: " + radius);
 	}
 
-	public void startMotion() {
-		motionX.startMotion();
-		motionY.startMotion();
-	}
-
-	public void stopMotion() {
-		motionX.stopMotion();
-		motionY.stopMotion();
-	}
-
-	public void applyForce(double clickedX, double width, double clickedY, double height) {
-		motionX.applyForce((clickedX-this.x)/width, mass);
-		motionY.applyForce((clickedY-this.y)/height, mass);
-	}
-
 	public void updatePosition() {
+		// Get current displacements
 		double newXDisplacement = motionX.getDisplacement();
+		double newYDisplacement = motionY.getDisplacement();
+		
+		// Update and retrieve displacements if moving
 		if (isXMoving()) {
-			// Update and retrieve displacements
 			newXDisplacement = motionX.updateDisplacement();
 		}
+		if (isYMoving()) {
+			newYDisplacement = motionY.updateDisplacement();
+		}
+		
 		// Detect boundaries and update displacement if hit
-		if (collisionDetectorX.detectBoundary(newXDisplacement)) {
+		if (collisionDetectorX.hasHitBoundary(newXDisplacement)) {
+			collisionDetectorX.setTarget(newXDisplacement);
 			newXDisplacement = motionX.bounce(collisionDetectorX.getBoundary(), collisionDetectorX.getEnergyLoss());
 			// If collided again after bounce, set to be at the boundary
-			if (collisionDetectorX.detectBoundary(newXDisplacement)) {
+			if (collisionDetectorX.hasHitBoundary(newXDisplacement)) {
 				motionX.setDisplacement(collisionDetectorX.getBoundary());
 				newXDisplacement = motionX.getDisplacement();
 			}
 		}
-		// Convert to px
-		this.x = (int)(Math.round(newXDisplacement*metresToPx));
-
-		double newYDisplacement = motionY.getDisplacement();
-		if (isYMoving()) {
-			newYDisplacement = motionY.updateDisplacement();
-		}
-		if (collisionDetectorY.detectBoundary(newYDisplacement)) {
+		if (collisionDetectorY.hasHitBoundary(newYDisplacement)) {
+			collisionDetectorY.setTarget(newYDisplacement);
 			newYDisplacement = motionY.bounce(collisionDetectorY.getBoundary(), collisionDetectorY.getEnergyLoss());
-			if (collisionDetectorY.detectBoundary(newYDisplacement)) {
+			if (collisionDetectorY.hasHitBoundary(newYDisplacement)) {
 				motionY.setDisplacement(collisionDetectorY.getBoundary());
 				newYDisplacement = motionY.getDisplacement();
 			}
 		}
+		
+		// Convert to px
+		this.x = (int)(Math.round(newXDisplacement*metresToPx));
 		this.y = (int)(Math.round(newYDisplacement*metresToPx));
-
 	}
 
 	/**
@@ -172,10 +159,10 @@ public class Ball {
 		if (newV1squared >= 0 ) {
 			double newV1 = Math.sqrt(newV1squared);
 
-			double newv1x = Math.acos(angle1)*newV1;
-			double newv1y = Math.asin(angle1)*newV1;
-			double newv2x = Math.acos(angle2)*newV2;
-			double newv2y = Math.asin(angle2)*newV2;
+			Double newv1x = Math.acos(angle1)*newV1;
+			Double newv1y = Math.asin(angle1)*newV1;
+			Double newv2x = Math.acos(angle2)*newV2;
+			Double newv2y = Math.asin(angle2)*newV2;
 
 			System.out.println(
 					"v1: " + v1 +
@@ -185,10 +172,7 @@ public class Ball {
 					", newV2: " + newV2 +
 					" (" + newv2x + ", " + newv2y + ")"
 			);
-			if (newv1x > -999999 &&
-					newv1y > -999999 &&
-					newv2x > -999999 &&
-					newv2y > -999999) {
+			if (newv1x != null && newv1y != null && newv2x != null && newv2y != null) {
 				this.motionX.setVelocity(newv1x*energyLossCollision);
 				this.motionY.setVelocity(newv1y*energyLossCollision);
 				otherBall.motionX.setVelocity(newv2x*energyLossCollision);
@@ -276,6 +260,18 @@ public class Ball {
 
 	public void setAccelerationY(double acceleration) {
 		motionY.setAcceleration(acceleration);
+	}
+
+	public double getPxToMetres() {
+		return pxToMetres;
+	}
+
+	public MotionX getMotionX() {
+		return motionX;
+	}
+
+	public MotionY getMotionY() {
+		return motionY;
 	}
 
 }

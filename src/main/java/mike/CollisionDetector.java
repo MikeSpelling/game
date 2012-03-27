@@ -10,8 +10,8 @@ public class CollisionDetector {
 	
 	private Boundary minBoundary;
 	private Boundary maxBoundary;
-	private double boundary = 0;
-	private double energyLoss = 0;
+	private Double boundary;
+	private Double energyLoss;
 	
 	
 	/**
@@ -28,29 +28,35 @@ public class CollisionDetector {
 		this.maxBoundary = new Boundary(max, energyLossMax);
 	}
 	
-	public boolean detectBoundary(double displacement) {		
+	public boolean hasHitBoundary(double displacement) {		
 		
+		if ((displacement >= maxBoundary.location) || (displacement <= minBoundary.location)) {
+			return true;
+		}
+			return false;
+	}
+	
+	public void setTarget(double displacement) {
 		if (displacement >= maxBoundary.location) {
 			this.boundary = maxBoundary.location;
 			this.energyLoss = maxBoundary.energyLoss;
-			return true;
 		}
 		else if (displacement <= minBoundary.location) {
-			this.boundary = minBoundary.location;
+			this.boundary =  minBoundary.location;
 			this.energyLoss = minBoundary.energyLoss;
-			return true;
 		}
 		else {
-			return false;
+			this.boundary = null;
+			this.energyLoss = null;
 		}
 	}
 
-	public double getBoundary() {
-		return boundary;
+	public Double getBoundary() {
+		return this.boundary;
 	}
 
-	public double getEnergyLoss() {
-		return energyLoss;
+	public Double getEnergyLoss() {
+		return this.energyLoss;
 	}
 	
 	private class Boundary {

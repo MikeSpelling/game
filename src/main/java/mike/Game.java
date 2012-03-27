@@ -7,6 +7,13 @@ import java.awt.Color;
 import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +28,7 @@ import java.util.List;
  * @author spellm01
  *
  */
-public class Game extends Applet implements Runnable {
+public class Game extends Applet implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private static final long serialVersionUID = -3248452394993145828L;
 
@@ -30,9 +37,8 @@ public class Game extends Applet implements Runnable {
 
 	private int widthPx;
 	private int heightPx;
-
-	private List<Ball> balls = new ArrayList<Ball>();
-	double energyLossCollision = 0.85;
+	
+	Balls balls;
 
 	private Image bufferImage;
 	private Image backgroundImage;
@@ -41,19 +47,25 @@ public class Game extends Applet implements Runnable {
 
 	// Method is called the first time you enter the HTML site with the applet
 	public void init() {
+		
+		setFocusable(true);
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		addKeyListener(this);
+		
 		// Defaults
-		int numBalls = 2;
+		int numBalls = 4;
 		int radius = 20;
 		double energyLossTop = 0.9;
 		double energyLossBottom = 0.9;
 		double energyLossLeft = 0.9;
 		double energyLossRight = 0.9;
-		energyLossCollision = 0.9;
+		double energyLossCollision = 0.9;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
 		double accelerationX = 0;
-		double accelerationY = 0;//accelerationDueToGravity;
+		double accelerationY = accelerationDueToGravity;
 
 		// Load parameters
 		heightPx = getHeight();
@@ -87,6 +99,8 @@ public class Game extends Applet implements Runnable {
 			int xSpacing = (widthPx/numBalls);
 			int x = (widthPx/numBalls)/2;
 			int y = radius + (heightPx/4);
+			
+			List<Ball> tempBalls = new ArrayList<Ball>();
 
 			// Create balls
 			for (int i = 0; i < numBalls; i++) {
@@ -99,9 +113,12 @@ public class Game extends Applet implements Runnable {
 				CollisionDetector collisionDetectorY =
 					new CollisionDetector(newRadius*pxToMetres, energyLossTop, (heightPx-newRadius)*pxToMetres, energyLossBottom);
 
-				balls.add(new Ball(xPos, y, initialVelocityX, initialVelocityY, accelerationX, accelerationY,
-						newRadius, mass, pxToMetres, bounceAudio, color, collisionDetectorX, collisionDetectorY));
+				tempBalls.add(new Ball(xPos, y, newRadius, mass, color, 
+						new MotionX(xPos, initialVelocityX, accelerationX, pxToMetres, bounceAudio),
+						new MotionY(y, initialVelocityY, accelerationY, pxToMetres, bounceAudio),
+						collisionDetectorX, collisionDetectorY));
 			}
+			balls = new Balls(tempBalls, energyLossCollision);
 		}
 
 		// Start game
@@ -111,19 +128,15 @@ public class Game extends Applet implements Runnable {
 
 	// Overridden run method for thread
 	public void run() {
-		for (Ball ball : balls) {
-			ball.startMotion();
-		}
+		balls.startMotion();
 		while(true) {
 			repaint(); // Calls update, then paint
 
 			try { Thread.sleep(1);	}
 			catch (InterruptedException ex) {}
 
-			for (Ball ball : balls) {
-				ball.updatePosition();
-			}
-			detectCollisions();
+			balls.updatePosition();
+			balls.detectCollisions();
 		}
 	}
 
@@ -137,56 +150,12 @@ public class Game extends Applet implements Runnable {
 
 	public void paint (Graphics buffer) {
 		buffer.drawImage(backgroundImage, 0, 0, widthPx, heightPx, this);
-		for (Ball ball : balls) {
-			buffer.setColor(ball.color);
-			buffer.fillOval (ball.x - ball.radius, ball.y - ball.radius,
-					2 * ball.radius, 2 * ball.radius);
-		}
-	}
-
-	/**
-	 * Detects if any ball currently in a position which
-	 * collides with another ball or a boundary.
-	 * Does not take into account the path of the ball
-	 * which may have crossed another, if both were moving fast
-	 * enough.
-	 *
-	 * @param balls
-	 */
-	private void detectCollisions() {
-		for (int i = 0; i < balls.size(); i++) {
-			Ball ball = balls.get(i);
-			// Detect collisions with other balls
-			for (int k = i+1; k < balls.size(); k++) {
-				Ball otherBall = balls.get(k);
-				if (ball.contains(otherBall)) {
-					ball.collide(otherBall, energyLossCollision);
-				}
-			}
-		}
+		balls.paintBalls(buffer);
 	}
 
 	public boolean mouseDown (Event e, int x, int y) {
-		for (Ball ball : balls) {
-			ball.applyForce(x, widthPx, y, heightPx);
-			break; // REMOVE to affect all balls
-		}
+		balls.applyForce(x, widthPx, y, heightPx);
 		return true; // Have to return something
-	}
-
-	public boolean keyDown (Event e, int key) {
-		if (key == Event.LEFT) {
-
-		}
-		else if (key == Event.RIGHT) {
-
-		}
-		else if (key == 32) { // Space bar
-			for (Ball ball : balls) {
-				ball.stopMotion();
-			}
-		}
-		return true;
 	}
 
 	// Method is called every time you enter the HTML - site with the applet
@@ -202,6 +171,66 @@ public class Game extends Applet implements Runnable {
 	// Method is called if you leave the page finally (e. g. closing browser)
 	public void destroy() {
 
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) { // Space bar
+			balls.stopMotion();
+		}
+		else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			balls.startMotion();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		balls.applyForce(e.getX(), widthPx, e.getY(), heightPx);
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		
+	}
+	
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent arg0) {
+		
 	}
 
 }
