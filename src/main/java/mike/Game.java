@@ -54,7 +54,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		addKeyListener(this);
 		
 		// Defaults
-		int numBalls = 4;
+		int numBalls = 2;
 		int radius = 20;
 		double energyLossTop = 0.9;
 		double energyLossBottom = 0.9;

@@ -9,7 +9,14 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 
-public class MotionXTest {
+/**
+ * Tests methods contained in Abstract class Motion,
+ * implementation uses MotionX
+ * 
+ * @author Mike
+ *
+ */
+public class MotionTest {
 	
 	double errorMargin = 0.01;
 	double nanoToSeconds = 0.000000001;
