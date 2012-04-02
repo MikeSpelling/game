@@ -121,66 +121,47 @@ public class Ball {
 	 * @param otherBall
 	 * @param energyLossCollision
 	 */
-	public void collide(Ball otherBall, double energyLossCollision) { // TODO - Confirm x, y contact - implement motion.collide
+	public void collide(Ball otherBall, double energyLossCollision) {
 		Point positionHit = getPointOfContact(otherBall);
-		double xPosition = positionHit.x * pxToMetres;
-		double yPosition = positionHit.y * pxToMetres;
+		double xPositionHit = positionHit.x * pxToMetres;
+		double yPositionHit = positionHit.y * pxToMetres;
+		
+//		double x1diff = xPositionHit-this.motionX.getDisplacement();
+//		double y1diff = yPositionHit-this.motionY.getDisplacement();
+//		double hyp1 = Math.sqrt((x1diff*x1diff) + (y1diff * y1diff));
+//		double angle1 = Math.asin(Math.abs(y1diff)/hyp1);
+//		
+//		double x2diff = xPositionHit-otherBall.motionX.getDisplacement();
+//		double y2diff = yPositionHit-otherBall.motionY.getDisplacement();
+//		double hyp2 = Math.sqrt((x2diff*x2diff) + (y2diff * y2diff));
+//		double angle2 = Math.asin(Math.abs(y2diff)/hyp2);
+//		
+//		if (x1diff > 0) this.motionX.setDisplacement(xPositionHit - (this.radius*Math.cos(angle1)));
+//		else this.motionX.setDisplacement(xPositionHit + (this.radius*Math.cos(angle1)));
+//		
+//		if (y1diff > 0) this.motionY.setDisplacement(yPositionHit - (this.radius*Math.sin(angle1)));
+//		else this.motionY.setDisplacement(yPositionHit + (this.radius*Math.sin(angle1)));
+//		
+//		if (x2diff > 0) otherBall.motionX.setDisplacement(xPositionHit - (otherBall.radius*Math.cos(angle2)));
+//		else otherBall.motionX.setDisplacement(xPositionHit + (otherBall.radius*Math.cos(angle2)));
+//		
+//		if (y2diff > 0) otherBall.motionY.setDisplacement(yPositionHit - (otherBall.radius*Math.sin(angle2)));
+//		else otherBall.motionY.setDisplacement(yPositionHit + (otherBall.radius*Math.sin(angle2)));
 
-		double v1x = motionX.getVelocity();
-		double v1y = motionY.getVelocity();
-		double v1 = Math.sqrt((v1x*v1x)+(v1y*v1y));
-		double y1diff = motionY.getDisplacement()-yPosition;
-		double x1diff = motionX.getDisplacement()-xPosition;
-		double angle1 = Math.asin(y1diff/
-				Math.sqrt((x1diff*x1diff)+(y1diff*y1diff)));
+		double v1x = this.motionX.getVelocity();
+		double v1y = this.motionY.getVelocity();
 		double v2x = otherBall.motionX.getVelocity();
 		double v2y = otherBall.motionY.getVelocity();
-		double v2 = Math.sqrt((v2x*v2x)+(v2y*v2y));
-		double y2diff = otherBall.motionY.getDisplacement()-yPosition;
-		double x2diff = otherBall.motionX.getDisplacement()-xPosition;
-		double angle2 = Math.asin(y2diff/
-				Math.sqrt((x2diff*x2diff)+(y2diff*y2diff)));
-		double m1 = this.mass;
-		double m2 = otherBall.mass;
-
-		/*if(Game.DEBUG)*/{System.out.println(
-				"Hit at: (" + xPosition + ", " + yPosition + ")" +
-				", giving angle1: " + angle1 +
-				", angle2: " + angle2 +
-				", by mass: " + m2 +
-				", at velocity: (" + v2x + ", " + v2y + ")" +
-				", this ball has mass of: " + m1 +
-				", and velocity: (" + v1x + ", " + v1y + ")"
-				);}
-
-		double newV2 = (2/(1-(m2/m1)))*
-			((v1x*Math.sin(angle2))+(v1y*Math.cos(angle2)));
-		double newV1squared = (v1*v1)-((m2/m1)*newV2*newV2);
-		if (newV1squared >= 0 ) {
-			double newV1 = Math.sqrt(newV1squared);
-
-			Double newv1x = Math.acos(angle1)*newV1;
-			Double newv1y = Math.asin(angle1)*newV1;
-			Double newv2x = Math.acos(angle2)*newV2;
-			Double newv2y = Math.asin(angle2)*newV2;
-
-			System.out.println(
-					"v1: " + v1 +
-					", newV1: " + newV1 +
-					" (" + newv1x + ", " + newv1y + ")" +
-					", v2: " + v2 +
-					", newV2: " + newV2 +
-					" (" + newv2x + ", " + newv2y + ")"
-			);
-			if (newv1x != null && newv1y != null && newv2x != null && newv2y != null) {
-				this.motionX.setVelocity(newv1x*energyLossCollision);
-				this.motionY.setVelocity(newv1y*energyLossCollision);
-				otherBall.motionX.setVelocity(newv2x*energyLossCollision);
-				otherBall.motionY.setVelocity(newv2y*energyLossCollision);
-			}
-			else {System.out.println("IGNORED HIT");}
-		}
-		else {System.out.println("IGNORED HIT");}
+		
+		double newv1x = (otherBall.mass*v2x)/(this.mass+otherBall.mass);
+		double newv1y = (otherBall.mass*v2y)/(this.mass+otherBall.mass);
+		double newv2x = (this.mass*v1x)/(this.mass+otherBall.mass);
+		double newv2y = (this.mass*v1y)/(this.mass+otherBall.mass);
+		
+		this.motionX.setVelocity(newv1x*energyLossCollision);
+		this.motionY.setVelocity(newv1y*energyLossCollision);
+		otherBall.motionX.setVelocity(newv2x*energyLossCollision);
+		otherBall.motionY.setVelocity(newv2y*energyLossCollision);
 	}
 
 	/**

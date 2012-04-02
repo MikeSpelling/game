@@ -3,18 +3,17 @@ package mike;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 import java.awt.Color;
 import java.awt.Point;
 
 import org.junit.Before;
 import org.junit.Test;
-
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.when;
 
 
 public class BallTest {
@@ -305,7 +304,8 @@ public class BallTest {
 	}
 	
 	@Test
-	public void testCollide() {
+	public void testCollideHorizontalRight() {
+		// GIVEN
 		int x1 = 100;
 		int y1 = 100;
 		int radius1 = 10;
@@ -320,25 +320,84 @@ public class BallTest {
 		int radius2 = 10;
 		double mass2 = 0.2;
 		when(motionX2.getVelocity()).thenReturn(-10.0);
-		when(motionX2.getAcceleration()).thenReturn(x2*pxToMetres);
+		when(motionX2.getDisplacement()).thenReturn(x2*pxToMetres);
 		when(motionY2.getVelocity()).thenReturn(0.0);
-		when(motionY2.getAcceleration()).thenReturn(y2*pxToMetres);
+		when(motionY2.getDisplacement()).thenReturn(y2*pxToMetres);
 		
-		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, collisionDetector, collisionDetector);
-		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, collisionDetector, collisionDetector);
-		
-		ball.collide(otherBall, energyLossCollision);
-		
-		double expectedVelocityX1 = 0;
+		double expectedVelocityX1 = -6.667;
 		double expectedVelocityY1 = 0;
-		double expectedVelocityX2 = 0;
+		double expectedVelocityX2 = 3.333;
 		double expectedVelocityY2 = 0;
 		
-		assertEquals(expectedVelocityX1, ball.getMotionX().getVelocity(), errorMargin);
-		assertEquals(expectedVelocityY1, ball.getMotionY().getVelocity(), errorMargin);
-		assertEquals(expectedVelocityX2, otherBall.getMotionX().getVelocity(), errorMargin);
-		assertEquals(expectedVelocityY2, otherBall.getMotionY().getVelocity(), errorMargin);
+		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, collisionDetector, collisionDetector);
+		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, collisionDetector, collisionDetector);		
+		assertTrue("Balls should collide", ball.contains(otherBall));
 		
-		fail("TODO - Calculate expected results");
+		// WHEN
+		ArgumentCaptor<Double> actualX1 = ArgumentCaptor.forClass(Double.class);
+		ArgumentCaptor<Double> actualY1 = ArgumentCaptor.forClass(Double.class);
+		ArgumentCaptor<Double> actualX2 = ArgumentCaptor.forClass(Double.class);
+		ArgumentCaptor<Double> actualY2 = ArgumentCaptor.forClass(Double.class);
+		ball.collide(otherBall, energyLossCollision);
+		
+		//THEN
+		verify(motionX1).setVelocity(actualX1.capture());
+		verify(motionY1).setVelocity(actualY1.capture());
+		verify(motionX2).setVelocity(actualX2.capture());
+		verify(motionY2).setVelocity(actualY2.capture());
+		
+		assertEquals("First balls X velocity", expectedVelocityX1, actualX1.getValue(), errorMargin);
+		assertEquals("First balls Y velocity", expectedVelocityY1, actualY1.getValue(), errorMargin);
+		assertEquals("Second balls X velocity", expectedVelocityX2, actualX2.getValue(), errorMargin);
+		assertEquals("Second balls Y velocity", expectedVelocityY2, actualY2.getValue(), errorMargin);
+	}
+	
+	@Test
+	public void testCollideHorizontalLeft() {
+		// GIVEN
+		int x1 = 120;
+		int y1 = 100;
+		int radius1 = 10;
+		double mass1 = 0.1;
+		when(motionX1.getVelocity()).thenReturn(-10.0);
+		when(motionX1.getDisplacement()).thenReturn(x1*pxToMetres);
+		when(motionY1.getVelocity()).thenReturn(0.0);
+		when(motionY1.getDisplacement()).thenReturn(y1*pxToMetres);
+		
+		int x2 = 100;
+		int y2 = 100;
+		int radius2 = 10;
+		double mass2 = 0.2;
+		when(motionX2.getVelocity()).thenReturn(10.0);
+		when(motionX2.getDisplacement()).thenReturn(x2*pxToMetres);
+		when(motionY2.getVelocity()).thenReturn(0.0);
+		when(motionY2.getDisplacement()).thenReturn(y2*pxToMetres);
+		
+		double expectedVelocityX1 = 6.667;
+		double expectedVelocityY1 = 0;
+		double expectedVelocityX2 = -3.333;
+		double expectedVelocityY2 = 0;
+		
+		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, collisionDetector, collisionDetector);
+		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, collisionDetector, collisionDetector);		
+		assertTrue("Balls should collide", ball.contains(otherBall));
+		
+		// WHEN
+		ArgumentCaptor<Double> actualX1 = ArgumentCaptor.forClass(Double.class);
+		ArgumentCaptor<Double> actualY1 = ArgumentCaptor.forClass(Double.class);
+		ArgumentCaptor<Double> actualX2 = ArgumentCaptor.forClass(Double.class);
+		ArgumentCaptor<Double> actualY2 = ArgumentCaptor.forClass(Double.class);
+		ball.collide(otherBall, energyLossCollision);
+		
+		//THEN
+		verify(motionX1).setVelocity(actualX1.capture());
+		verify(motionY1).setVelocity(actualY1.capture());
+		verify(motionX2).setVelocity(actualX2.capture());
+		verify(motionY2).setVelocity(actualY2.capture());
+		
+		assertEquals("First balls X velocity", expectedVelocityX1, actualX1.getValue(), errorMargin);
+		assertEquals("First balls Y velocity", expectedVelocityY1, actualY1.getValue(), errorMargin);
+		assertEquals("Second balls X velocity", expectedVelocityX2, actualX2.getValue(), errorMargin);
+		assertEquals("Second balls Y velocity", expectedVelocityY2, actualY2.getValue(), errorMargin);
 	}
 }
