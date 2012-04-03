@@ -1,5 +1,7 @@
 package mike;
 
+import java.util.ArrayList;
+
 
 /**
  * 
@@ -8,55 +10,86 @@ package mike;
  */
 public class CollisionDetector {
 	
-	private Boundary minBoundary;
-	private Boundary maxBoundary;
-	private Double boundary;
-	private Double energyLoss;
+	private double pxToMetres;
+	private Boundary topBoundary;
+	private Boundary bottomBoundary;
+	private Boundary leftBoundary;
+	private Boundary rightBoundary;
 	
 	
-	/**
-	 * 
-	 * @param radius
-	 * @param min
-	 * @param energyLossMin
-	 * @param max
-	 * @param energyLossMax
-	 */
-	public CollisionDetector(double min, double energyLossMin, double max, double energyLossMax) {
+	public CollisionDetector(double top, double energyLossTop, double bottom, double energyLossBottom,
+			double left, double energyLossLeft, double right, double energyLossRight, double pxToMetres) {
 		
-		this.minBoundary = new Boundary(min, energyLossMin);
-		this.maxBoundary = new Boundary(max, energyLossMax);
+		this.pxToMetres = pxToMetres;
+		this.topBoundary = new Boundary(top*pxToMetres, energyLossTop);
+		this.bottomBoundary = new Boundary(bottom*pxToMetres, energyLossBottom);
+		this.leftBoundary = new Boundary(left*pxToMetres, energyLossLeft);
+		this.rightBoundary = new Boundary(right*pxToMetres, energyLossRight);
 	}
 	
-	public boolean hasHitBoundary(double displacement) {		
-		
-		if ((displacement >= maxBoundary.location) || (displacement <= minBoundary.location)) {
-			return true;
-		}
-			return false;
-	}
-	
-	public void setTarget(double displacement) {
-		if (displacement >= maxBoundary.location) {
-			this.boundary = maxBoundary.location;
-			this.energyLoss = maxBoundary.energyLoss;
-		}
-		else if (displacement <= minBoundary.location) {
-			this.boundary =  minBoundary.location;
-			this.energyLoss = minBoundary.energyLoss;
-		}
-		else {
-			this.boundary = null;
-			this.energyLoss = null;
+	public void detectCollisionsAndBoundary(ArrayList<Ball> balls) {
+		for (int i = 0; i < balls.size(); i++) {
+			Ball ball = balls.get(i);
+			
+			// Detect collisions with other balls
+			for (int k = i+1; k < balls.size(); k++) {
+				Ball otherBall = balls.get(k);
+				if (ball.contains(otherBall)) {
+					ball.collide(otherBall);
+				}
+			}
+			detectBoundary(ball);
 		}
 	}
 
-	public Double getBoundary() {
-		return this.boundary;
+	public void detectCollisions(ArrayList<Ball> balls) {
+		for (int i = 0; i < balls.size(); i++) {
+			Ball ball = balls.get(i);
+			
+			// Detect collisions with other balls
+			for (int k = i+1; k < balls.size(); k++) {
+				Ball otherBall = balls.get(k);
+				if (ball.contains(otherBall)) {
+					ball.collide(otherBall);
+				}
+			}
+		}
 	}
-
-	public Double getEnergyLoss() {
-		return this.energyLoss;
+	
+	public void detectBoundary(Ball ball) {
+		// Detect boundaries and update displacement if hit
+		
+		// X Boundaries
+		if ((ball.getxDisplacement()+(ball.radius*pxToMetres)) >= rightBoundary.location) {
+			ball.getMotionX().bounce(rightBoundary.location, rightBoundary.energyLoss);
+			// If collided again after bounce, set to be at the boundary
+			if ((ball.getxDisplacement()+(ball.radius*pxToMetres)) >= rightBoundary.location) {
+				ball.setxDisplacement(rightBoundary.location-(ball.radius*pxToMetres));
+			}
+		}
+		if ((ball.getxDisplacement()-(ball.radius*pxToMetres)) <= leftBoundary.location) {
+			ball.getMotionX().bounce(leftBoundary.location, leftBoundary.energyLoss);
+			// If collided again after bounce, set to be at the boundary
+			if ((ball.getxDisplacement()-(ball.radius*pxToMetres)) <= leftBoundary.location) {
+				ball.setxDisplacement(leftBoundary.location+(ball.radius*pxToMetres));
+			}
+		}
+		
+		// Y Boundaries
+		if ((ball.getyDisplacement()+(ball.radius*pxToMetres)) >= bottomBoundary.location) {
+			ball.getMotionY().bounce(bottomBoundary.location, bottomBoundary.energyLoss);
+			// If collided again after bounce, set to be at the boundary
+			if ((ball.getyDisplacement()+(ball.radius*pxToMetres)) >= bottomBoundary.location) {
+				ball.setyDisplacement(bottomBoundary.location-(ball.radius*pxToMetres));
+			}
+		}
+		if ((ball.getyDisplacement()-(ball.radius*pxToMetres)) <= topBoundary.location) {
+			ball.getMotionY().bounce(topBoundary.location, topBoundary.energyLoss);
+			// If collided again after bounce, set to be at the boundary
+			if ((ball.getyDisplacement()-(ball.radius*pxToMetres)) <= topBoundary.location) {
+				ball.setyDisplacement(topBoundary.location+(ball.radius*pxToMetres));
+			}
+		}		
 	}
 	
 	private class Boundary {

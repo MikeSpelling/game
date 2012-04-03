@@ -2,7 +2,6 @@ package mike;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
-
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.Graphics;
@@ -14,9 +13,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -38,7 +35,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 	private int widthPx;
 	private int heightPx;
 	
-	Balls balls;
+	private ArrayList<Ball> balls;
+	private CollisionDetector collisionDetector;
 
 	private Image bufferImage;
 	private Image backgroundImage;
@@ -60,7 +58,6 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		double energyLossBottom = 1;
 		double energyLossLeft = 1;
 		double energyLossRight = 1;
-		double energyLossCollision = 1;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
@@ -86,6 +83,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
 
 		double pxToMetres = heightMetres/(double)heightPx;
+		collisionDetector =	new CollisionDetector(0, energyLossTop, heightPx, energyLossBottom, 
+				0, energyLossLeft, widthPx, energyLossRight, pxToMetres);
 
 		// Get files
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
@@ -100,25 +99,20 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 			int x = (widthPx/numBalls)/2;
 			int y = radius + (heightPx/4);
 			
-			List<Ball> tempBalls = new ArrayList<Ball>();
-
 			// Create balls
+			balls = new ArrayList<Ball>();
 			for (int i = 0; i < numBalls; i++) {
 				Color color = new Color((float)(i)/(float)(numBalls), (float)(i)/(float)(numBalls), (float)(i)/(float)(numBalls));
 				int newRadius = (radius*(1+i))/numBalls;
 				double mass = (double)(i+1)/10;
 				int xPos = x + (xSpacing*i);
-				CollisionDetector collisionDetectorX =
-					new CollisionDetector(newRadius*pxToMetres, energyLossLeft, (widthPx-newRadius)*pxToMetres, energyLossRight);
-				CollisionDetector collisionDetectorY =
-					new CollisionDetector(newRadius*pxToMetres, energyLossTop, (heightPx-newRadius)*pxToMetres, energyLossBottom);
+				double energyLoss = 1;
 
-				tempBalls.add(new Ball(xPos, y, newRadius, mass, color, 
+				balls.add(new Ball(xPos, y, newRadius, mass, color, 
 						new MotionX(xPos, initialVelocityX, accelerationX, pxToMetres, bounceAudio),
 						new MotionY(y, initialVelocityY, accelerationY, pxToMetres, bounceAudio),
-						collisionDetectorX, collisionDetectorY));
+						energyLoss));
 			}
-			balls = new Balls(tempBalls, energyLossCollision);
 		}
 
 		// Start game
@@ -128,15 +122,20 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	// Overridden run method for thread
 	public void run() {
-		balls.startMotion();
+		for (Ball ball : balls) {
+			ball.getMotionX().startMotion();
+			ball.getMotionY().startMotion();
+		}
 		while(true) {
 			repaint(); // Calls update, then paint
 
 			try { Thread.sleep(1);	}
 			catch (InterruptedException ex) {}
 
-			balls.updatePosition();
-			balls.detectCollisions();
+			for (Ball ball : balls) {
+				ball.updatePosition();
+			}
+			collisionDetector.detectCollisionsAndBoundary(balls);
 		}
 	}
 
@@ -150,11 +149,17 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	public void paint (Graphics buffer) {
 		buffer.drawImage(backgroundImage, 0, 0, widthPx, heightPx, this);
-		balls.paintBalls(buffer);
+		for (Ball ball : balls) {
+			ball.paintBall(buffer);
+		}
 	}
 
 	public boolean mouseDown (Event e, int x, int y) {
-		balls.applyForce(x, widthPx, y, heightPx);
+		for (Ball ball : balls) {
+			ball.getMotionX().applyForce((double)(x-ball.x)/widthPx, ball.mass);
+			ball.getMotionY().applyForce((double)(y-ball.y)/heightPx, ball.mass);
+			//break; // REMOVE to affect all balls
+		}
 		return true; // Have to return something
 	}
 
@@ -176,10 +181,16 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) { // Space bar
-			balls.stopMotion();
+			for (Ball ball : balls) {
+				ball.getMotionX().stopMotion();
+				ball.getMotionY().stopMotion();
+			}
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-			balls.startMotion();
+			for (Ball ball : balls) {
+				ball.getMotionX().startMotion();
+				ball.getMotionY().startMotion();
+			}
 		}
 	}
 
@@ -195,7 +206,13 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		balls.applyForce(e.getX(), widthPx, e.getY(), heightPx);
+		int x = e.getX();
+		int y = e.getY();
+		for (Ball ball : balls) {
+			ball.getMotionX().applyForce((double)(x-ball.x)/widthPx, ball.mass);
+			ball.getMotionY().applyForce((double)(y-ball.y)/heightPx, ball.mass);
+			//break; // REMOVE to affect all balls
+		}
 	}
 
 	@Override

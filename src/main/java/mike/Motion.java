@@ -48,7 +48,7 @@ public abstract class Motion {
 	 * @param energyLossThroughBounce
 	 * @return
 	 */
-	public double bounce(double boundary, double energyLossThroughBounce) {
+	public void bounce(double boundary, double energyLossThroughBounce) {
 		double distancePastBoundary = displacement-boundary;
 		double velocityAsHitsBoundarySquared = (velocity*velocity)-(2*acceleration*distancePastBoundary);
 		if (Game.DEBUG) {System.out.println("\nboundary: " + boundary +
@@ -91,12 +91,37 @@ public abstract class Motion {
 			stopMotion();
 		}
 		//bounceAudio.play();
-		return displacement;
+	}
+	
+	public void collide(double mass, int radius, double otherMass, double otherRadius, double otherVelocity, double energyLoss, double positionHit) {
+//		double x1diff = xPositionHit-this.motionX.getDisplacement();
+//		double y1diff = yPositionHit-this.motionY.getDisplacement();
+//		double hyp1 = Math.sqrt((x1diff*x1diff) + (y1diff * y1diff));
+//		double angle1 = Math.asin(Math.abs(y1diff)/hyp1);
+//		
+//		double x2diff = xPositionHit-otherBall.motionX.getDisplacement();
+//		double y2diff = yPositionHit-otherBall.motionY.getDisplacement();
+//		double hyp2 = Math.sqrt((x2diff*x2diff) + (y2diff * y2diff));
+//		double angle2 = Math.asin(Math.abs(y2diff)/hyp2);
+//		
+//		if (x1diff > 0) this.motionX.setDisplacement(xPositionHit - (this.radius*Math.cos(angle1)));
+//		else this.motionX.setDisplacement(xPositionHit + (this.radius*Math.cos(angle1)));
+//		
+//		if (y1diff > 0) this.motionY.setDisplacement(yPositionHit - (this.radius*Math.sin(angle1)));
+//		else this.motionY.setDisplacement(yPositionHit + (this.radius*Math.sin(angle1)));
+//		
+//		if (x2diff > 0) otherBall.motionX.setDisplacement(xPositionHit - (otherBall.radius*Math.cos(angle2)));
+//		else otherBall.motionX.setDisplacement(xPositionHit + (otherBall.radius*Math.cos(angle2)));
+//		
+//		if (y2diff > 0) otherBall.motionY.setDisplacement(yPositionHit - (otherBall.radius*Math.sin(angle2)));
+//		else otherBall.motionY.setDisplacement(yPositionHit + (otherBall.radius*Math.sin(angle2)));
+		
+		double newv1 = (otherMass*otherVelocity)/(mass+otherMass);		
+		velocity = newv1*energyLoss;
 	}
 
 	public void applyForce(double force, double mass) {
 		velocity = (force/mass)*2;
-		acceleration = initialAcceleration;
 		startMotion();
 	}
 
