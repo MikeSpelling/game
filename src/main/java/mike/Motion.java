@@ -116,7 +116,7 @@ public abstract class Motion {
 //		if (y2diff > 0) otherBall.motionY.setDisplacement(yPositionHit - (otherBall.radius*Math.sin(angle2)));
 //		else otherBall.motionY.setDisplacement(yPositionHit + (otherBall.radius*Math.sin(angle2)));
 		
-		double newv1 = (otherMass*otherVelocity)/(mass+otherMass);		
+		double newv1 = (otherMass*otherVelocity)/(mass+otherMass);
 		velocity = newv1*energyLoss;
 	}
 

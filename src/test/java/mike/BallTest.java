@@ -301,9 +301,9 @@ public class BallTest {
 		assertEquals("X Position", expectedX, point.x);
 		assertEquals("Y Position", expectedY, point.y);
 	}
-	
+
 	@Test
-	public void testCollideHorizontalRight() {
+	public void testCollideRight() {
 		// GIVEN
 		int x1 = 100;
 		int y1 = 100;
@@ -336,6 +336,126 @@ public class BallTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 110;
 		double yPositionHit = 100;
+		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
+		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
+		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);
+		verify(motionY2).collide(mass2, radius2, mass1, radius1, velocityY1, combinedEnergyLoss, yPositionHit);
+	}
+	
+	@Test
+	public void testCollideLeft() {
+		// GIVEN
+		int x1 = 100;
+		int y1 = 100;
+		int radius1 = 10;
+		double mass1 = 0.1;
+		double energyLoss1 = 0.7;
+		double velocityX1 = 2;
+		double velocityY1 = 3;
+		when(motionX1.getVelocity()).thenReturn(velocityX1);
+		when(motionY1.getVelocity()).thenReturn(velocityY1);
+		
+		int x2 = 70;
+		int y2 = 100;
+		int radius2 = 20;
+		double mass2 = 0.2;
+		double energyLoss2 = 0.6;
+		double velocityX2 = 4;
+		double velocityY2 = 5;
+		when(motionX2.getVelocity()).thenReturn(velocityX2);
+		when(motionY2.getVelocity()).thenReturn(velocityY2);
+		
+		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss1);
+		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, energyLoss2);		
+		assertTrue("Balls should collide", ball.contains(otherBall));
+		
+		// WHEN
+		ball.collide(otherBall);
+		
+		//THEN
+		double combinedEnergyLoss = energyLoss1 * energyLoss2;
+		double xPositionHit = 90;
+		double yPositionHit = 100;
+		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
+		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
+		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);
+		verify(motionY2).collide(mass2, radius2, mass1, radius1, velocityY1, combinedEnergyLoss, yPositionHit);
+	}
+	
+	@Test
+	public void testCollideBottom() {
+		// GIVEN
+		int x1 = 100;
+		int y1 = 100;
+		int radius1 = 20;
+		double mass1 = 0.1;
+		double energyLoss1 = 0.7;
+		double velocityX1 = 3;
+		double velocityY1 = 2;
+		when(motionX1.getVelocity()).thenReturn(velocityX1);
+		when(motionY1.getVelocity()).thenReturn(velocityY1);
+		
+		int x2 = 100;
+		int y2 = 130;
+		int radius2 = 10;
+		double mass2 = 0.2;
+		double energyLoss2 = 0.6;
+		double velocityX2 = 5;
+		double velocityY2 = 4;
+		when(motionX2.getVelocity()).thenReturn(velocityX2);
+		when(motionY2.getVelocity()).thenReturn(velocityY2);
+		
+		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss1);
+		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, energyLoss2);		
+		assertTrue("Balls should collide", ball.contains(otherBall));
+		
+		// WHEN
+		ball.collide(otherBall);
+		
+		//THEN
+		double combinedEnergyLoss = energyLoss1 * energyLoss2;
+		double xPositionHit = 100;
+		double yPositionHit = 120;
+		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
+		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
+		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);
+		verify(motionY2).collide(mass2, radius2, mass1, radius1, velocityY1, combinedEnergyLoss, yPositionHit);
+	}
+	
+	@Test
+	public void testCollideTop() {
+		// GIVEN
+		int x1 = 100;
+		int y1 = 100;
+		int radius1 = 5;
+		double mass1 = 0.1;
+		double energyLoss1 = 0.7;
+		double velocityX1 = 3;
+		double velocityY1 = 2;
+		when(motionX1.getVelocity()).thenReturn(velocityX1);
+		when(motionY1.getVelocity()).thenReturn(velocityY1);
+		
+		int x2 = 100;
+		int y2 = 90;
+		int radius2 = 5;
+		double mass2 = 0.2;
+		double energyLoss2 = 0.6;
+		double velocityX2 = 5;
+		double velocityY2 = 4;
+		when(motionX2.getVelocity()).thenReturn(velocityX2);
+		when(motionY2.getVelocity()).thenReturn(velocityY2);
+		
+		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss1);
+		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, energyLoss2);		
+		assertTrue("Balls should collide", ball.contains(otherBall));
+		
+		// WHEN
+		ball.collide(otherBall);
+		
+		//THEN
+		double combinedEnergyLoss = energyLoss1 * energyLoss2;
+		double xPositionHit = 100;
+		double yPositionHit = 95;
 		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
 		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
 		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);

@@ -190,7 +190,7 @@ public class MotionTest {
 	}
 	
 	@Test
-	public void testCollideHorizontalLeft() {
+	public void testCollideLeft() {
 		// GIVEN
 		double acc = 0;
 		
@@ -217,6 +217,54 @@ public class MotionTest {
 		when(ball2.getMotionY()).thenReturn(motionY2);
 		
 		double xPositionHit = 110;
+		double yPositionHit = 100;
+		
+		// WHEN
+		motionX1.collide(mass1, radius1, mass2, radius2, xVelocity2, energyLoss, xPositionHit);
+		motionY1.collide(mass1, radius1, mass2, radius2, yVelocity2, energyLoss, yPositionHit);
+		motionX2.collide(mass2, radius2, mass1, radius1, xVelocity1, energyLoss, xPositionHit);
+		motionY2.collide(mass2, radius2, mass1, radius1, yVelocity1, energyLoss, yPositionHit);
+		
+		//THEN
+		double expectedVelocityX1 = 6.667;
+		double expectedVelocityY1 = 0;
+		double expectedVelocityX2 = -3.333;
+		double expectedVelocityY2 = 0;
+		
+		assertEquals("First balls X velocity", expectedVelocityX1, motionX1.getVelocity(), errorMargin);
+		assertEquals("First balls Y velocity", expectedVelocityY1, motionY1.getVelocity(), errorMargin);
+		assertEquals("Second balls X velocity", expectedVelocityX2, ball2.getMotionX().getVelocity(), errorMargin);
+		assertEquals("Second balls Y velocity", expectedVelocityY2, ball2.getMotionY().getVelocity(), errorMargin);
+	}
+	
+	@Test
+	public void testCollideRight() {
+		// GIVEN
+		double acc = 0;
+		
+		int x1 = 120;
+		int y1 = 100;
+		int radius1 = 10;
+		double mass1 = 0.3;
+		double xVelocity1 = 5;
+		double yVelocity1 = 0;
+		MotionX motionX1 = new MotionX(x1, xVelocity1, acc, pxToMetres, bounceAudio);
+		MotionY motionY1 = new MotionY(y1, yVelocity1, acc, pxToMetres, bounceAudio);
+		when(ball1.getMotionX()).thenReturn(motionX1);
+		when(ball1.getMotionY()).thenReturn(motionY1);
+		
+		int x2 = 150;
+		int y2 = 100;
+		int radius2 = 20;
+		double mass2 = 0.4;
+		double xVelocity2 = -20;
+		double yVelocity2 = 0;
+		MotionX motionX2 = new MotionX(x2, xVelocity2, acc, pxToMetres, bounceAudio);
+		MotionY motionY2 = new MotionY(y2, yVelocity2, acc, pxToMetres, bounceAudio);		
+		when(ball2.getMotionX()).thenReturn(motionX2);
+		when(ball2.getMotionY()).thenReturn(motionY2);
+		
+		double xPositionHit = 130;
 		double yPositionHit = 100;
 		
 		// WHEN
