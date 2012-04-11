@@ -202,6 +202,7 @@ public class MotionTest {
 		double yVelocity1 = 0;
 		MotionX motionX1 = new MotionX(x1, xVelocity1, acc, pxToMetres, bounceAudio);
 		MotionY motionY1 = new MotionY(y1, yVelocity1, acc, pxToMetres, bounceAudio);
+		when(ball1.getMass()).thenReturn(mass1);
 		when(ball1.getMotionX()).thenReturn(motionX1);
 		when(ball1.getMotionY()).thenReturn(motionY1);
 		
@@ -213,6 +214,7 @@ public class MotionTest {
 		double yVelocity2 = 0;
 		MotionX motionX2 = new MotionX(x2, xVelocity2, acc, pxToMetres, bounceAudio);
 		MotionY motionY2 = new MotionY(y2, yVelocity2, acc, pxToMetres, bounceAudio);		
+		when(ball2.getMass()).thenReturn(mass2);
 		when(ball2.getMotionX()).thenReturn(motionX2);
 		when(ball2.getMotionY()).thenReturn(motionY2);
 		
@@ -226,7 +228,7 @@ public class MotionTest {
 		motionY2.collide(mass2, radius2, ball1, energyLoss, yPositionHit);
 		
 		//THEN
-		double expectedVelocityX1 = 6.667;
+		double expectedVelocityX1 = 16.667;
 		double expectedVelocityY1 = 0;
 		double expectedVelocityX2 = -3.333;
 		double expectedVelocityY2 = 0;
@@ -238,7 +240,7 @@ public class MotionTest {
 	}
 	
 	@Test
-	public void testCollideRight() {
+	public void testCollideRightBothFinishLeft() {
 		// GIVEN
 		double acc = 0;
 		
@@ -246,7 +248,7 @@ public class MotionTest {
 		int y1 = 100;
 		int radius1 = 10;
 		double mass1 = 0.3;
-		double xVelocity1 = 5;
+		double xVelocity1 = 2;
 		double yVelocity1 = 0;
 		MotionX motionX1 = new MotionX(x1, xVelocity1, acc, pxToMetres, bounceAudio);
 		MotionY motionY1 = new MotionY(y1, yVelocity1, acc, pxToMetres, bounceAudio);
@@ -274,9 +276,9 @@ public class MotionTest {
 		motionY2.collide(mass2, radius2,ball1, energyLoss, yPositionHit);
 		
 		//THEN
-		double expectedVelocityX1 = 6.667;
+		double expectedVelocityX1 = -23.143;
 		double expectedVelocityY1 = 0;
-		double expectedVelocityX2 = -3.333;
+		double expectedVelocityX2 = -1.143;
 		double expectedVelocityY2 = 0;
 		
 		assertEquals("First balls X velocity", expectedVelocityX1, motionX1.getVelocity(), errorMargin);

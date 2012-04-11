@@ -16,6 +16,8 @@ public abstract class Motion {
 	public Status status;
 
 	private AudioClip bounceAudio;
+	
+	public abstract void collide(double mass, int radius, Ball otherBall, double energyLoss, double positionHit);
 
 
 	public Motion(int pos, double velocity, double acceleration, double pxToMetres, AudioClip bounceAudio) {
@@ -51,18 +53,14 @@ public abstract class Motion {
 	public void bounce(double boundary, double energyLossThroughBounce) {
 		double distancePastBoundary = displacement-boundary;
 		double velocityAsHitsBoundarySquared = (velocity*velocity)-(2*acceleration*distancePastBoundary);
-		if (Game.DEBUG) {System.out.println("\nboundary: " + boundary +
-				", position: " + displacement +
-				", velocity: " + velocity +
-				", velocityAsHitsBoundarySquared: " + velocityAsHitsBoundarySquared);}
+		
 		if (velocityAsHitsBoundarySquared > 0) {
 			// Get velocity as it hits the boundary (U), working out whether
 			// sqrt should be positive or negative
-			double velocityAsHitsBoundary = Math.sqrt(velocityAsHitsBoundarySquared); // WIll be positive
-			if (velocity < 0) velocityAsHitsBoundary *= -1; // Travelling upwards therefore velocity will be negative
+			double velocityAsHitsBoundary = Math.sqrt(velocityAsHitsBoundarySquared); // Will be positive
+			if (velocity < 0) velocityAsHitsBoundary *= -1; // Travelling upwards/left therefore velocity will be negative
 
-			// Get time spent travelling past the boundary
-			// displacement/time if no acceleration
+			// Get time spent travelling past the boundary (displacement/time if no acceleration)
 			double timeTravellingPastBoundary = distancePastBoundary/velocity;
 			if (Math.abs(acceleration) > 0) timeTravellingPastBoundary = (velocity-velocityAsHitsBoundary)/acceleration;
 
@@ -70,57 +68,14 @@ public abstract class Motion {
 			double bouncedVelocity = (-1*velocityAsHitsBoundary) * energyLossThroughBounce;
 
 			// Extrapolate calculated values for the time past boundary
-			double newVelocity = bouncedVelocity + (acceleration*timeTravellingPastBoundary);
-			if (newVelocity*bouncedVelocity >= 0) { // Must be same positive or negative
-				double newDisplacement = boundary +
-					((bouncedVelocity)*timeTravellingPastBoundary) + ((acceleration*timeTravellingPastBoundary*timeTravellingPastBoundary)/2);
-				velocity = newVelocity;
-				displacement = newDisplacement;
-			}
-			else { // Already past boundary after bounce
-				stopMotion();
-			}
-			if (Game.DEBUG) { System.out.println("distancePastBoundary: " + distancePastBoundary +
-						", velocityAsHitsBoundary: " + velocityAsHitsBoundary +
-						", timeTravellingPastBoundary: " + timeTravellingPastBoundary +
-						"\nbouncedVelocity: " + bouncedVelocity +
-						", velocity: " + velocity +
-						", displacement: " + displacement);}
+			velocity = bouncedVelocity + (acceleration*timeTravellingPastBoundary);
+			// Calculate new displacement, setting to boundary if still within
+			displacement = boundary +
+				((bouncedVelocity)*timeTravellingPastBoundary) + ((acceleration*timeTravellingPastBoundary*timeTravellingPastBoundary)/2);
 		}
-		else { // Something gone wrong?
-			stopMotion();
-		}
-		//bounceAudio.play();
-	}
-	
-	public void collide(double mass, int radius, Ball otherBall, double energyLoss, double positionHit) {
-//		double x1diff = xPositionHit-this.motionX.getDisplacement();
-//		double y1diff = yPositionHit-this.motionY.getDisplacement();
-//		double hyp1 = Math.sqrt((x1diff*x1diff) + (y1diff * y1diff));
-//		double angle1 = Math.asin(Math.abs(y1diff)/hyp1);
-//		
-//		double x2diff = xPositionHit-otherBall.motionX.getDisplacement();
-//		double y2diff = yPositionHit-otherBall.motionY.getDisplacement();
-//		double hyp2 = Math.sqrt((x2diff*x2diff) + (y2diff * y2diff));
-//		double angle2 = Math.asin(Math.abs(y2diff)/hyp2);
-//		
-//		if (x1diff > 0) this.motionX.setDisplacement(xPositionHit - (this.radius*Math.cos(angle1)));
-//		else this.motionX.setDisplacement(xPositionHit + (this.radius*Math.cos(angle1)));
-//		
-//		if (y1diff > 0) this.motionY.setDisplacement(yPositionHit - (this.radius*Math.sin(angle1)));
-//		else this.motionY.setDisplacement(yPositionHit + (this.radius*Math.sin(angle1)));
-//		
-//		if (x2diff > 0) otherBall.motionX.setDisplacement(xPositionHit - (otherBall.radius*Math.cos(angle2)));
-//		else otherBall.motionX.setDisplacement(xPositionHit + (otherBall.radius*Math.cos(angle2)));
-//		
-//		if (y2diff > 0) otherBall.motionY.setDisplacement(yPositionHit - (otherBall.radius*Math.sin(angle2)));
-//		else otherBall.motionY.setDisplacement(yPositionHit + (otherBall.radius*Math.sin(angle2)));
+		else stopMotion(); // Cannot sqrt negative - something gone wrong?
 		
-//		double newv1 = (otherMass*otherVelocity)/(mass+otherMass);
-		double newVelocity = ((mass-otherBall.mass)/(mass+otherBall.mass))*this.velocity;
-		double otherNewVelocity = ((2*mass)/((mass+otherBall.mass)))*this.velocity;
-		this.velocity = newVelocity*energyLoss;
-		otherBall.getMotionY().setVelocity(otherNewVelocity*energyLoss);
+		//bounceAudio.play();
 	}
 
 	public void applyForce(double force, double mass) {

@@ -22,24 +22,24 @@ public class Ball {
 	private final MotionY motionY;
 	private double energyLoss;	
 	
-	public double mass;
-	public int radius;
-	public int x;
-	public int y;
-	public Color color;
+	private double mass;
+	private int radius;
+	private int x;
+	private int y;
+	private Color color;
 
 
 	public Ball(int x, int y, int radius, double mass, Color color,	MotionX motionX, MotionY motionY, double energyLoss) {
-		this.x = x;
-		this.y = y;
-		this.radius = radius;
-		this.mass = mass;
-		this.color = color;
-		this.energyLoss = energyLoss;
 		this.motionX = motionX;
 		this.motionY = motionY;
 		this.pxToMetres = motionX.getPxToMetres();
 		this.metresToPx = motionX.getMetresToPx();
+		this.radius = radius;
+		this.mass = mass;
+		this.setX(x);
+		this.setY(y);
+		this.color = color;
+		this.energyLoss = energyLoss;
 		if(Game.DEBUG)
 			System.out.println("Ball created with x: " + x + ", y: " + y + ", radius: " + radius);
 	}
@@ -48,11 +48,11 @@ public class Ball {
 		// Update and retrieve displacements if moving
 		if (isXMoving()) {
 			double xDisplacement = motionX.updateDisplacement();
-			this.x = (int)(Math.round(xDisplacement*metresToPx));
+			this.setX((int)(Math.round(xDisplacement*metresToPx)));
 		}
 		if (isYMoving()) {
 			double yDisplacement = motionY.updateDisplacement();
-			this.y = (int)(Math.round(yDisplacement*metresToPx));
+			this.setY((int)(Math.round(yDisplacement*metresToPx)));
 		}
 	}
 
@@ -64,8 +64,8 @@ public class Ball {
 	 */
 	public boolean contains(Ball otherBall) {
 		// Calculate length between balls
-		double width = Math.abs(this.x - otherBall.x);
-		double height = Math.abs(this.y - otherBall.y);
+		double width = Math.abs(this.getX() - otherBall.getX());
+		double height = Math.abs(this.getY() - otherBall.getY());
 		double length = Math.sqrt((width*width)+(height*height));
 
 		// Determine if radius' intersect
@@ -86,8 +86,8 @@ public class Ball {
 		
 		double combinedEnergyLoss = this.energyLoss * otherBall.energyLoss;
 		
-		this.motionX.collide(this.mass, this.radius, otherBall, combinedEnergyLoss, xPositionHit);
-		this.motionY.collide(this.mass, this.radius, otherBall, combinedEnergyLoss, yPositionHit);
+		this.motionX.collide(this.getMass(), this.radius, otherBall, combinedEnergyLoss, xPositionHit);
+		this.motionY.collide(this.getMass(), this.radius, otherBall, combinedEnergyLoss, yPositionHit);
 	}
 
 	/**
@@ -104,12 +104,12 @@ public class Ball {
 		int yMidpoint;
 
 		// Distance between balls
-		int xDiff = this.x - otherBall.x;
-		int yDiff = this.y - otherBall.y;
+		int xDiff = this.getX() - otherBall.getX();
+		int yDiff = this.getY() - otherBall.getY();
 
 		// Calculate angle between balls
 		double hypoteneuse = Math.sqrt((Math.abs(xDiff)*Math.abs(xDiff))+(Math.abs(yDiff)*Math.abs(yDiff)));
-		if (hypoteneuse == 0) return new Point (this.x, this.y);
+		if (hypoteneuse == 0) return new Point (this.getX(), this.getY());
 		double angle = Math.asin(Math.abs(yDiff)/hypoteneuse);
 
 		// Project x and y lengths using the angle and radius
@@ -121,41 +121,51 @@ public class Ball {
 		// Determine whether to add or subtract each length
 		if (xDiff > 0) { // This ball to the right
 			// Therefore contact to the left of this ball, right of other ball
-			int thisXPosition = (int)Math.round(this.x - thisXLength);
-			int otherXPosition = (int)Math.round(otherBall.x + otherXLength);
+			int thisXPosition = (int)Math.round(this.getX() - thisXLength);
+			int otherXPosition = (int)Math.round(otherBall.getX() + otherXLength);
 			// Balls may have gone past each other, calculate midpoint of collision
 			xMidpoint = thisXPosition + Math.abs(thisXPosition-otherXPosition)/2;
 		}
 		else { // This ball to the left
 			// Therefore contact to the right of this ball, left of other ball
-			int thisXPosition = (int)Math.round(this.x + thisXLength);
-			int otherXPosition = (int)Math.round(otherBall.x - otherXLength);
+			int thisXPosition = (int)Math.round(this.getX() + thisXLength);
+			int otherXPosition = (int)Math.round(otherBall.getX() - otherXLength);
 			xMidpoint = thisXPosition - Math.abs(thisXPosition-otherXPosition)/2;
 		}
 		if (yDiff > 0) { // This ball below
 			// Therefore contact above this ball, below other ball
-			int thisYPosition = (int)Math.round(this.y - thisYLength);
-			int otherYPosition = (int)Math.round(otherBall.y + otherYLength);
+			int thisYPosition = (int)Math.round(this.getY() - thisYLength);
+			int otherYPosition = (int)Math.round(otherBall.getY() + otherYLength);
 			yMidpoint = thisYPosition + Math.abs(thisYPosition-otherYPosition)/2;
 		}
 		else { // This ball above
 			// Therefore contact above this ball, below other ball
-			int thisYPosition = (int)Math.round(this.y + thisYLength);
-			int otherYPosition = (int)Math.round(otherBall.y - otherYLength);
+			int thisYPosition = (int)Math.round(this.getY() + thisYLength);
+			int otherYPosition = (int)Math.round(otherBall.getY() - otherYLength);
 			yMidpoint = thisYPosition - Math.abs(thisYPosition-otherYPosition)/2;
 		}
 
 		if (Game.DEBUG) {
-			System.out.println("Ball at: " + this.x + ", " + this.y +
-					"   Other ball at: " + otherBall.x + ", " + otherBall.y +
+			System.out.println("Ball at: " + this.getX() + ", " + this.getY() +
+					"   Other ball at: " + otherBall.getX() + ", " + otherBall.getY() +
 					"   Collision at: " + xMidpoint + ", " + yMidpoint);
 		}
 		return new Point(xMidpoint, yMidpoint); // Return midpoint of collision
 	}
 	
+	public void bounceX(double boundary, double energyLoss) {
+		motionX.bounce(boundary, energyLoss);
+		this.x = (int)Math.round(motionX.getDisplacement()*metresToPx);
+	}
+	
+	public void bounceY(double boundary, double energyLoss) {
+		motionY.bounce(boundary, energyLoss);
+		this.y = (int)Math.round(motionY.getDisplacement()*metresToPx);
+	}
+	
 	public void paintBall(Graphics buffer) {
 		buffer.setColor(color);
-		buffer.fillOval (x - radius, y - radius,
+		buffer.fillOval (getX() - radius, getY() - radius,
 				2 * radius, 2 * radius);
 	}
 
@@ -189,11 +199,12 @@ public class Ball {
 
 	public void setxDisplacement(double xDisplacement) {
 		this.motionX.setDisplacement(xDisplacement);
-		this.x = (int)Math.round(xDisplacement*metresToPx);
+		this.setX((int)Math.round(xDisplacement*metresToPx));
 	}
 
 	public void setyDisplacement(double yDisplacement) {
-		this.y = (int)Math.round(yDisplacement*metresToPx);
+		this.motionY.setDisplacement(yDisplacement);
+		this.setY((int)Math.round(yDisplacement*metresToPx));
 	}
 
 	public double getEnergyLoss() {
@@ -206,6 +217,30 @@ public class Ball {
 	
 	public double getRadiusMetres() {
 		return this.radius*pxToMetres;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setMass(double mass) {
+		this.mass = mass;
+	}
+
+	public double getMass() {
+		return mass;
 	}
 
 }

@@ -52,7 +52,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		addKeyListener(this);
 		
 		// Defaults
-		int numBalls = 2;
+		int numBalls = 1;
 		int radius = 20;
 		double energyLossTop = 1;
 		double energyLossBottom = 1;
@@ -156,8 +156,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	public boolean mouseDown (Event e, int x, int y) {
 		for (Ball ball : balls) {
-			ball.getMotionX().applyForce((double)(x-ball.x)/widthPx, ball.mass);
-			ball.getMotionY().applyForce((double)(y-ball.y)/heightPx, ball.mass);
+			ball.getMotionX().applyForce((double)(x-ball.getX())/widthPx, ball.getMass());
+			ball.getMotionY().applyForce((double)(y-ball.getY())/heightPx, ball.getMass());
 			//break; // REMOVE to affect all balls
 		}
 		return true; // Have to return something
@@ -209,8 +209,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		int x = e.getX();
 		int y = e.getY();
 		for (Ball ball : balls) {
-			ball.getMotionX().applyForce((double)(x-ball.x)/widthPx, ball.mass);
-			ball.getMotionY().applyForce((double)(y-ball.y)/heightPx, ball.mass);
+			ball.getMotionX().applyForce((double)(x-ball.getX())/widthPx, ball.getMass());
+			ball.getMotionY().applyForce((double)(y-ball.getY())/heightPx, ball.getMass());
 			//break; // REMOVE to affect all balls
 		}
 	}

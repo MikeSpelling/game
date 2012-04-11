@@ -62,39 +62,25 @@ public class CollisionDetector {
 		double leftCalibrated = leftBoundary.location + radius;
 		double topCalibrated = topBoundary.location + radius;
 		double bottomCalibrated = bottomBoundary.location - radius;
-		// Detect boundaries and update displacement if hit
 		
-		// X Boundaries
 		if (ball.getxDisplacement() >= rightCalibrated) {
-			ball.getMotionX().bounce(rightCalibrated, rightBoundary.energyLoss);
-			// If collided again after bounce, set to be at the boundary
-			if (ball.getxDisplacement() >= rightCalibrated) {
-				ball.setxDisplacement(rightCalibrated);
-			}
+			ball.bounceX(rightCalibrated, rightBoundary.energyLoss);
 		}
 		if (ball.getxDisplacement() <= leftCalibrated) {
 			ball.getMotionX().bounce(leftCalibrated, leftBoundary.energyLoss);
-			// If collided again after bounce, set to be at the boundary
-			if (ball.getxDisplacement() <= leftCalibrated) {
-				ball.setxDisplacement(leftCalibrated);
-			}
-		}
-		
-		// Y Boundaries
+		}		
 		if (ball.getyDisplacement() >= bottomCalibrated) {
 			ball.getMotionY().bounce(bottomCalibrated, bottomBoundary.energyLoss);
-			// If collided again after bounce, set to be at the boundary
-			if (ball.getyDisplacement() >= bottomCalibrated) {
-				ball.setyDisplacement(bottomCalibrated);
-			}
 		}
 		if (ball.getyDisplacement() <= topCalibrated) {
 			ball.getMotionY().bounce(topCalibrated, topBoundary.energyLoss);
-			// If collided again after bounce, set to be at the boundary
-			if (ball.getyDisplacement() <= topCalibrated) {
-				ball.setyDisplacement(topCalibrated);
-			}
-		}		
+		}	
+		
+		// Check hasnt bounced back past another boundary
+		if (ball.getxDisplacement() >= rightCalibrated) ball.setxDisplacement(rightCalibrated);
+		else if (ball.getxDisplacement() <= leftCalibrated) ball.setxDisplacement(leftCalibrated);
+		if (ball.getyDisplacement() >= bottomCalibrated) ball.setyDisplacement(bottomCalibrated);
+		else if (ball.getyDisplacement() <= topCalibrated) ball.setyDisplacement(topCalibrated);
 	}
 	
 	private class Boundary {
