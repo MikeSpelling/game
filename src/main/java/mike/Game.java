@@ -52,7 +52,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		addKeyListener(this);
 		
 		// Defaults
-		int numBalls = 3;
+		int numBalls = 2;
 		int radius = 20;
 		double energyLossTop = 1;
 		double energyLossBottom = 1;
@@ -83,8 +83,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
 
 		double pxToMetres = heightMetres/(double)heightPx;
-		collisionDetector =	new CollisionDetector(0, energyLossTop, heightPx, energyLossBottom, 
-				0, energyLossLeft, widthPx, energyLossRight, pxToMetres);
+		collisionDetector =	new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom, 
+				0, energyLossLeft, widthPx*pxToMetres, energyLossRight);
 
 		// Get files
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");

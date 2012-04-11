@@ -336,10 +336,8 @@ public class BallTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 110;
 		double yPositionHit = 100;
-		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
-		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);
-		verify(motionY2).collide(mass2, radius2, mass1, radius1, velocityY1, combinedEnergyLoss, yPositionHit);
+		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
+		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
 	}
 	
 	@Test
@@ -376,10 +374,8 @@ public class BallTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 90;
 		double yPositionHit = 100;
-		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
-		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);
-		verify(motionY2).collide(mass2, radius2, mass1, radius1, velocityY1, combinedEnergyLoss, yPositionHit);
+		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
+		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
 	}
 	
 	@Test
@@ -416,10 +412,8 @@ public class BallTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 100;
 		double yPositionHit = 120;
-		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
-		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);
-		verify(motionY2).collide(mass2, radius2, mass1, radius1, velocityY1, combinedEnergyLoss, yPositionHit);
+		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
+		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
 	}
 	
 	@Test
@@ -456,10 +450,8 @@ public class BallTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 100;
 		double yPositionHit = 95;
-		verify(motionX1).collide(mass1, radius1, mass2, radius2, velocityX2, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, mass2, radius2, velocityY2, combinedEnergyLoss, yPositionHit);
-		verify(motionX2).collide(mass2, radius2, mass1, radius1, velocityX1, combinedEnergyLoss, xPositionHit);
-		verify(motionY2).collide(mass2, radius2, mass1, radius1, velocityY1, combinedEnergyLoss, yPositionHit);
+		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
+		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
 	}
 	
 }

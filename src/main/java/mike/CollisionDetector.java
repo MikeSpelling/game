@@ -6,11 +6,12 @@ import java.util.ArrayList;
 /**
  * 
  * @author Mike
+ * 
+ * Deals in metres, not px
  *
  */
 public class CollisionDetector {
 	
-	private double pxToMetres;
 	private Boundary topBoundary;
 	private Boundary bottomBoundary;
 	private Boundary leftBoundary;
@@ -18,13 +19,12 @@ public class CollisionDetector {
 	
 	
 	public CollisionDetector(double top, double energyLossTop, double bottom, double energyLossBottom,
-			double left, double energyLossLeft, double right, double energyLossRight, double pxToMetres) {
+			double left, double energyLossLeft, double right, double energyLossRight) {
 		
-		this.pxToMetres = pxToMetres;
-		this.topBoundary = new Boundary(top*pxToMetres, energyLossTop);
-		this.bottomBoundary = new Boundary(bottom*pxToMetres, energyLossBottom);
-		this.leftBoundary = new Boundary(left*pxToMetres, energyLossLeft);
-		this.rightBoundary = new Boundary(right*pxToMetres, energyLossRight);
+		this.topBoundary = new Boundary(top, energyLossTop);
+		this.bottomBoundary = new Boundary(bottom, energyLossBottom);
+		this.leftBoundary = new Boundary(left, energyLossLeft);
+		this.rightBoundary = new Boundary(right, energyLossRight);
 	}
 	
 	public void detectCollisionsAndBoundary(ArrayList<Ball> balls) {
@@ -57,37 +57,42 @@ public class CollisionDetector {
 	}
 	
 	public void detectBoundary(Ball ball) {
+		double radius = ball.getRadiusMetres();
+		double rightCalibrated = rightBoundary.location - radius;
+		double leftCalibrated = leftBoundary.location + radius;
+		double topCalibrated = topBoundary.location + radius;
+		double bottomCalibrated = bottomBoundary.location - radius;
 		// Detect boundaries and update displacement if hit
 		
 		// X Boundaries
-		if ((ball.getxDisplacement()+(ball.radius*pxToMetres)) >= rightBoundary.location) {
-			ball.getMotionX().bounce(rightBoundary.location, rightBoundary.energyLoss);
+		if (ball.getxDisplacement() >= rightCalibrated) {
+			ball.getMotionX().bounce(rightCalibrated, rightBoundary.energyLoss);
 			// If collided again after bounce, set to be at the boundary
-			if ((ball.getxDisplacement()+(ball.radius*pxToMetres)) >= rightBoundary.location) {
-				ball.setxDisplacement(rightBoundary.location-(ball.radius*pxToMetres));
+			if (ball.getxDisplacement() >= rightCalibrated) {
+				ball.setxDisplacement(rightCalibrated);
 			}
 		}
-		if ((ball.getxDisplacement()-(ball.radius*pxToMetres)) <= leftBoundary.location) {
-			ball.getMotionX().bounce(leftBoundary.location, leftBoundary.energyLoss);
+		if (ball.getxDisplacement() <= leftCalibrated) {
+			ball.getMotionX().bounce(leftCalibrated, leftBoundary.energyLoss);
 			// If collided again after bounce, set to be at the boundary
-			if ((ball.getxDisplacement()-(ball.radius*pxToMetres)) <= leftBoundary.location) {
-				ball.setxDisplacement(leftBoundary.location+(ball.radius*pxToMetres));
+			if (ball.getxDisplacement() <= leftCalibrated) {
+				ball.setxDisplacement(leftCalibrated);
 			}
 		}
 		
 		// Y Boundaries
-		if ((ball.getyDisplacement()+(ball.radius*pxToMetres)) >= bottomBoundary.location) {
-			ball.getMotionY().bounce(bottomBoundary.location, bottomBoundary.energyLoss);
+		if (ball.getyDisplacement() >= bottomCalibrated) {
+			ball.getMotionY().bounce(bottomCalibrated, bottomBoundary.energyLoss);
 			// If collided again after bounce, set to be at the boundary
-			if ((ball.getyDisplacement()+(ball.radius*pxToMetres)) >= bottomBoundary.location) {
-				ball.setyDisplacement(bottomBoundary.location-(ball.radius*pxToMetres));
+			if (ball.getyDisplacement() >= bottomCalibrated) {
+				ball.setyDisplacement(bottomCalibrated);
 			}
 		}
-		if ((ball.getyDisplacement()-(ball.radius*pxToMetres)) <= topBoundary.location) {
-			ball.getMotionY().bounce(topBoundary.location, topBoundary.energyLoss);
+		if (ball.getyDisplacement() <= topCalibrated) {
+			ball.getMotionY().bounce(topCalibrated, topBoundary.energyLoss);
 			// If collided again after bounce, set to be at the boundary
-			if ((ball.getyDisplacement()-(ball.radius*pxToMetres)) <= topBoundary.location) {
-				ball.setyDisplacement(topBoundary.location+(ball.radius*pxToMetres));
+			if (ball.getyDisplacement() <= topCalibrated) {
+				ball.setyDisplacement(topCalibrated);
 			}
 		}		
 	}

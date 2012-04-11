@@ -220,10 +220,10 @@ public class MotionTest {
 		double yPositionHit = 100;
 		
 		// WHEN
-		motionX1.collide(mass1, radius1, mass2, radius2, xVelocity2, energyLoss, xPositionHit);
-		motionY1.collide(mass1, radius1, mass2, radius2, yVelocity2, energyLoss, yPositionHit);
-		motionX2.collide(mass2, radius2, mass1, radius1, xVelocity1, energyLoss, xPositionHit);
-		motionY2.collide(mass2, radius2, mass1, radius1, yVelocity1, energyLoss, yPositionHit);
+		motionX1.collide(mass1, radius1, ball2, energyLoss, xPositionHit);
+		motionY1.collide(mass1, radius1, ball2, energyLoss, yPositionHit);
+		motionX2.collide(mass2, radius2, ball1, energyLoss, xPositionHit);
+		motionY2.collide(mass2, radius2, ball1, energyLoss, yPositionHit);
 		
 		//THEN
 		double expectedVelocityX1 = 6.667;
@@ -268,10 +268,10 @@ public class MotionTest {
 		double yPositionHit = 100;
 		
 		// WHEN
-		motionX1.collide(mass1, radius1, mass2, radius2, xVelocity2, energyLoss, xPositionHit);
-		motionY1.collide(mass1, radius1, mass2, radius2, yVelocity2, energyLoss, yPositionHit);
-		motionX2.collide(mass2, radius2, mass1, radius1, xVelocity1, energyLoss, xPositionHit);
-		motionY2.collide(mass2, radius2, mass1, radius1, yVelocity1, energyLoss, yPositionHit);
+		motionX1.collide(mass1, radius1, ball2, energyLoss, xPositionHit);
+		motionY1.collide(mass1, radius1, ball2, energyLoss, yPositionHit);
+		motionX2.collide(mass2, radius2, ball1, energyLoss, xPositionHit);
+		motionY2.collide(mass2, radius2,ball1, energyLoss, yPositionHit);
 		
 		//THEN
 		double expectedVelocityX1 = 6.667;

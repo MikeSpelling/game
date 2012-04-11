@@ -93,7 +93,7 @@ public abstract class Motion {
 		//bounceAudio.play();
 	}
 	
-	public void collide(double mass, int radius, double otherMass, double otherRadius, double otherVelocity, double energyLoss, double positionHit) {
+	public void collide(double mass, int radius, Ball otherBall, double energyLoss, double positionHit) {
 //		double x1diff = xPositionHit-this.motionX.getDisplacement();
 //		double y1diff = yPositionHit-this.motionY.getDisplacement();
 //		double hyp1 = Math.sqrt((x1diff*x1diff) + (y1diff * y1diff));
@@ -116,8 +116,11 @@ public abstract class Motion {
 //		if (y2diff > 0) otherBall.motionY.setDisplacement(yPositionHit - (otherBall.radius*Math.sin(angle2)));
 //		else otherBall.motionY.setDisplacement(yPositionHit + (otherBall.radius*Math.sin(angle2)));
 		
-		double newv1 = (otherMass*otherVelocity)/(mass+otherMass);
-		velocity = newv1*energyLoss;
+//		double newv1 = (otherMass*otherVelocity)/(mass+otherMass);
+		double newVelocity = ((mass-otherBall.mass)/(mass+otherBall.mass))*this.velocity;
+		double otherNewVelocity = ((2*mass)/((mass+otherBall.mass)))*this.velocity;
+		this.velocity = newVelocity*energyLoss;
+		otherBall.getMotionY().setVelocity(otherNewVelocity*energyLoss);
 	}
 
 	public void applyForce(double force, double mass) {

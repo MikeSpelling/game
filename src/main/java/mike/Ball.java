@@ -86,10 +86,8 @@ public class Ball {
 		
 		double combinedEnergyLoss = this.energyLoss * otherBall.energyLoss;
 		
-		this.motionX.collide(this.mass, this.radius, otherBall.mass, otherBall.radius, otherBall.getMotionX().getVelocity(), combinedEnergyLoss, xPositionHit);
-		this.motionY.collide(this.mass, this.radius, otherBall.mass, otherBall.radius, otherBall.getMotionY().getVelocity(), combinedEnergyLoss, yPositionHit);
-		otherBall.motionX.collide(otherBall.mass, otherBall.radius, this.mass, this.radius, this.getMotionX().getVelocity(), combinedEnergyLoss, xPositionHit);
-		otherBall.motionY.collide(otherBall.mass, otherBall.radius, this.mass, this.radius, this.getMotionY().getVelocity(), combinedEnergyLoss, yPositionHit);
+		this.motionX.collide(this.mass, this.radius, otherBall, combinedEnergyLoss, xPositionHit);
+		this.motionY.collide(this.mass, this.radius, otherBall, combinedEnergyLoss, yPositionHit);
 	}
 
 	/**
@@ -204,6 +202,10 @@ public class Ball {
 
 	public void setEnergyLoss(double energyLoss) {
 		this.energyLoss = energyLoss;
+	}
+	
+	public double getRadiusMetres() {
+		return this.radius*pxToMetres;
 	}
 
 }
