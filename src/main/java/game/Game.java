@@ -1,4 +1,4 @@
-package mike;
+package game;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -14,6 +14,13 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+
+import utils.BallUtils;
+import utils.CollisionDetector;
+import utils.MotionX;
+import utils.MotionY;
+
+import models.Ball;
 
 
 /**
@@ -35,6 +42,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 	private int heightPx;
 	private double metresToPx;
 	
+	private BallUtils ballUtils = new BallUtils();
 	private ArrayList<Ball> balls;
 	private CollisionDetector collisionDetector;
 
@@ -85,7 +93,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		metresToPx = (double)heightPx/heightMetres;
 		double widthMetres = widthPx*(1/metresToPx);
 		collisionDetector =	new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom, 
-				0, energyLossLeft, widthMetres, energyLossRight);
+				0, energyLossLeft, widthMetres, energyLossRight, ballUtils);
 
 		// Get files
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
@@ -134,7 +142,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 			catch (InterruptedException ex) {}
 
 			for (Ball ball : balls) {
-				ball.updatePosition();
+				ballUtils.updatePosition(ball);
 			}
 			collisionDetector.detectCollisionsAndBoundary(balls);
 		}
@@ -151,7 +159,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 	public void paint (Graphics buffer) {
 		buffer.drawImage(backgroundImage, 0, 0, widthPx, heightPx, this);
 		for (Ball ball : balls) {
-			ball.paintBall(buffer, metresToPx);
+			ballUtils.paintBall(ball, buffer, metresToPx);
 		}
 	}
 

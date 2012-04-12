@@ -1,13 +1,21 @@
-package mike;
+package game;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import utils.BallUtils;
+import utils.CollisionDetector;
+import utils.MotionX;
+import utils.MotionY;
+
 import java.awt.Color;
 import java.util.ArrayList;
+
+import models.Ball;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +47,8 @@ public class CollisionDetectorTest {
 	@Mock private Ball ball4;
 	@Mock private Ball ball5;
 	
+	@Mock private BallUtils ballUtils;
+	
 	@Mock Color color;
 	
 	
@@ -46,7 +56,8 @@ public class CollisionDetectorTest {
 	public void before() throws Exception {		
 		MockitoAnnotations.initMocks(this);
 		
-		collisionDetector = new CollisionDetector(top, energyLossTop, bottom, energyLossBottom, left, energyLossLeft, right, energyLossRight);
+		collisionDetector = new CollisionDetector(top, energyLossTop, bottom, energyLossBottom, 
+				left, energyLossLeft, right, energyLossRight, ballUtils);
 		
 		balls.add(ball1); balls.add(ball2); balls.add(ball3); balls.add(ball4); balls.add(ball5);
 	}
@@ -54,42 +65,42 @@ public class CollisionDetectorTest {
 	@Test
 	public void testDetectCollisions() throws Exception {
 		
-		when(ball1.contains(ball2)).thenReturn(true);
-		when(ball1.contains(ball3)).thenReturn(false);
-		when(ball1.contains(ball4)).thenReturn(false);
-		when(ball1.contains(ball5)).thenReturn(false);
+		when(ballUtils.contains(ball1, ball2)).thenReturn(true);
+		when(ballUtils.contains(ball1, ball3)).thenReturn(false);
+		when(ballUtils.contains(ball1, ball4)).thenReturn(false);
+		when(ballUtils.contains(ball1, ball5)).thenReturn(false);
 		
-		when(ball2.contains(any(Ball.class))).thenReturn(true);
+		when(ballUtils.contains(eq(ball2), any(Ball.class))).thenReturn(true);
 		
-		when(ball3.contains(ball4)).thenReturn(false);
-		when(ball3.contains(ball5)).thenReturn(true);
+		when(ballUtils.contains(ball3, ball4)).thenReturn(false);
+		when(ballUtils.contains(ball3, ball5)).thenReturn(true);
 		
-		when(ball4.contains(ball5)).thenReturn(false);
+		when(ballUtils.contains(ball4, ball5)).thenReturn(false);
 
 		collisionDetector.detectCollisions(balls);
 		
 		// ball1 hits ball2 only
-		verify(ball1, never()).collide(ball1);
-		verify(ball1).collide(ball2);
-		verify(ball1, never()).collide(ball3);
-		verify(ball1, never()).collide(ball4);
-		verify(ball1, never()).collide(ball5);
+		verify(ballUtils, never()).collide(ball1, ball1);
+		verify(ballUtils).collide(ball1, ball2);
+		verify(ballUtils, never()).collide(ball1, ball3);
+		verify(ballUtils, never()).collide(ball1, ball4);
+		verify(ballUtils, never()).collide(ball1, ball5);
 		// ball2 already hit ball1 but should hit others
-		verify(ball2, never()).collide(ball1);
-		verify(ball2, never()).collide(ball2);
-		verify(ball2).collide(ball3);
-		verify(ball2).collide(ball4);
-		verify(ball2).collide(ball5);
+		verify(ballUtils, never()).collide(ball2, ball1);
+		verify(ballUtils, never()).collide(ball2, ball2);
+		verify(ballUtils).collide(ball2, ball3);
+		verify(ballUtils).collide(ball2, ball4);
+		verify(ballUtils).collide(ball2, ball5);
 		// ball3 should hit ball5 (already hit ball2)
-		verify(ball3, never()).collide(ball1);
-		verify(ball3, never()).collide(ball2);
-		verify(ball3, never()).collide(ball3);
-		verify(ball3, never()).collide(ball4);
-		verify(ball3).collide(ball5);
+		verify(ballUtils, never()).collide(ball3, ball1);
+		verify(ballUtils, never()).collide(ball3, ball2);
+		verify(ballUtils, never()).collide(ball3, ball3);
+		verify(ballUtils, never()).collide(ball3, ball4);
+		verify(ballUtils).collide(ball3, ball5);
 		// ball4 already hit 2
-		verify(ball4, never()).collide(any(Ball.class));
+		verify(ballUtils, never()).collide(eq(ball4), any(Ball.class));
 		// last ball already taken into account
-		verify(ball5, never()).collide(any(Ball.class));
+		verify(ballUtils, never()).collide(eq(ball5), any(Ball.class));
 	}
 	
 	@Test
@@ -120,8 +131,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(x, left+radius, energyLossLeft);
-		verify(motionY, never()).bounce(anyDouble(), anyDouble(), anyDouble());
+		verify(ballUtils).bounceX(ball, left+radius, energyLossLeft);
+		verify(ballUtils, never()).bounceY(any(Ball.class), anyDouble(), anyDouble());
 	}
 	
 	@Test
@@ -136,8 +147,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(x, right-radius, energyLossRight);
-		verify(motionY, never()).bounce(anyDouble(), anyDouble(), anyDouble());
+		verify(ballUtils).bounceX(ball, right-radius, energyLossRight);
+		verify(ballUtils, never()).bounceY(any(Ball.class), anyDouble(), anyDouble());
 	}
 	
 	@Test
@@ -152,8 +163,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX, never()).bounce(anyDouble(), anyDouble(), anyDouble());
-		verify(motionY).bounce(y, top+radius, energyLossTop);
+		verify(ballUtils, never()).bounceX(any(Ball.class), anyDouble(), anyDouble());
+		verify(ballUtils).bounceY(ball, top+radius, energyLossTop);
 	}
 	
 	@Test
@@ -168,8 +179,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX, never()).bounce(anyDouble(), anyDouble(), anyDouble());
-		verify(motionY).bounce(y, bottom-radius, energyLossBottom);
+		verify(ballUtils, never()).bounceX(any(Ball.class), anyDouble(), anyDouble());
+		verify(ballUtils).bounceY(ball, bottom-radius, energyLossBottom);
 	}
 	
 	@Test
@@ -184,8 +195,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(x, left+radius, energyLossLeft);
-		verify(motionY).bounce(y, bottom-radius, energyLossBottom);
+		verify(ballUtils).bounceX(ball, left+radius, energyLossLeft);
+		verify(ballUtils).bounceY(ball, bottom-radius, energyLossBottom);
 	}
 	
 	@Test
@@ -200,8 +211,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(x, right-radius, energyLossRight);
-		verify(motionY).bounce(y, bottom-radius, energyLossBottom);
+		verify(ballUtils).bounceX(ball, right-radius, energyLossRight);
+		verify(ballUtils).bounceY(ball, bottom-radius, energyLossBottom);
 	}
 	
 	@Test
@@ -216,8 +227,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(x, left+radius, energyLossLeft);
-		verify(motionY).bounce(y, top+radius, energyLossTop);
+		verify(ballUtils).bounceX(ball, left+radius, energyLossLeft);
+		verify(ballUtils).bounceY(ball, top+radius, energyLossTop);
 	}
 	
 	@Test
@@ -232,8 +243,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(x, right-radius, energyLossRight);
-		verify(motionY).bounce(y, top+radius, energyLossTop);
+		verify(ballUtils).bounceX(ball, right-radius, energyLossRight);
+		verify(ballUtils).bounceY(ball, top+radius, energyLossTop);
 	}
 	
 	@Test
@@ -259,53 +270,53 @@ public class CollisionDetectorTest {
 		when(ball5.getX()).thenReturn(1.0);
 		when(ball5.getRadius()).thenReturn(5.0);
 		
-		when(ball1.contains(ball2)).thenReturn(true);
-		when(ball1.contains(ball3)).thenReturn(false);
-		when(ball1.contains(ball4)).thenReturn(false);
-		when(ball1.contains(ball5)).thenReturn(false);
+		when(ballUtils.contains(ball1, ball2)).thenReturn(true);
+		when(ballUtils.contains(ball1, ball3)).thenReturn(false);
+		when(ballUtils.contains(ball1, ball4)).thenReturn(false);
+		when(ballUtils.contains(ball1, ball5)).thenReturn(false);
 		
-		when(ball2.contains(any(Ball.class))).thenReturn(true);
+		when(ballUtils.contains(eq(ball2), any(Ball.class))).thenReturn(true);
 		
-		when(ball3.contains(ball4)).thenReturn(false);
-		when(ball3.contains(ball5)).thenReturn(true);
+		when(ballUtils.contains(ball3, ball4)).thenReturn(false);
+		when(ballUtils.contains(ball3, ball5)).thenReturn(true);
 		
-		when(ball4.contains(ball5)).thenReturn(false);
+		when(ballUtils.contains(ball4, ball5)).thenReturn(false);
 
 		collisionDetector.detectCollisionsAndBoundary(balls);
 		
 		// ball1 hits ball2 only
-		verify(ball1, never()).collide(ball1);
-		verify(ball1).collide(ball2);
-		verify(ball1, never()).collide(ball3);
-		verify(ball1, never()).collide(ball4);
-		verify(ball1, never()).collide(ball5);
+		verify(ballUtils, never()).collide(ball1, ball1);
+		verify(ballUtils).collide(ball1, ball2);
+		verify(ballUtils, never()).collide(ball1, ball3);
+		verify(ballUtils, never()).collide(ball1, ball4);
+		verify(ballUtils, never()).collide(ball1, ball5);
 		// ball2 already hit ball1 but should hit others
-		verify(ball2, never()).collide(ball1);
-		verify(ball2, never()).collide(ball2);
-		verify(ball2).collide(ball3);
-		verify(ball2).collide(ball4);
-		verify(ball2).collide(ball5);
+		verify(ballUtils, never()).collide(ball2, ball1);
+		verify(ballUtils, never()).collide(ball2, ball2);
+		verify(ballUtils).collide(ball2, ball3);
+		verify(ballUtils).collide(ball2, ball4);
+		verify(ballUtils).collide(ball2, ball5);
 		// ball3 should hit ball5 (already hit ball2)
-		verify(ball3, never()).collide(ball1);
-		verify(ball3, never()).collide(ball2);
-		verify(ball3, never()).collide(ball3);
-		verify(ball3, never()).collide(ball4);
-		verify(ball3).collide(ball5);
+		verify(ballUtils, never()).collide(ball3, ball1);
+		verify(ballUtils, never()).collide(ball3, ball2);
+		verify(ballUtils, never()).collide(ball3, ball3);
+		verify(ballUtils, never()).collide(ball3, ball4);
+		verify(ballUtils).collide(ball3, ball5);
 		// ball4 already hit 2
-		verify(ball4, never()).collide(any(Ball.class));
+		verify(ballUtils, never()).collide(eq(ball4), any(Ball.class));
 		// last ball already taken into account
-		verify(ball5, never()).collide(any(Ball.class));
+		verify(ballUtils, never()).collide(eq(ball5), any(Ball.class));
 		
-		verify(ball1).bounceX(left+ball1.getRadius(), energyLossLeft);
-		verify(ball1).bounceY(top+ball1.getRadius(), energyLossTop);
-		verify(ball2).bounceX(left+ball2.getRadius(), energyLossLeft);
-		verify(ball2).bounceY(top+ball2.getRadius(), energyLossTop);
-		verify(ball3).bounceX(left+ball3.getRadius(), energyLossLeft);
-		verify(ball3).bounceY(top+ball3.getRadius(), energyLossTop);
-		verify(ball4).bounceX(left+ball4.getRadius(), energyLossLeft);
-		verify(ball4).bounceY(top+ball4.getRadius(), energyLossTop);
-		verify(ball5).bounceX(left+ball5.getRadius(), energyLossLeft);
-		verify(ball5).bounceY(top+ball5.getRadius(), energyLossTop);
+		verify(ballUtils).bounceX(ball1, left+ball1.getRadius(), energyLossLeft);
+		verify(ballUtils).bounceY(ball1, top+ball1.getRadius(), energyLossTop);
+		verify(ballUtils).bounceX(ball2, left+ball2.getRadius(), energyLossLeft);
+		verify(ballUtils).bounceY(ball2, top+ball2.getRadius(), energyLossTop);
+		verify(ballUtils).bounceX(ball3, left+ball3.getRadius(), energyLossLeft);
+		verify(ballUtils).bounceY(ball3, top+ball3.getRadius(), energyLossTop);
+		verify(ballUtils).bounceX(ball4, left+ball4.getRadius(), energyLossLeft);
+		verify(ballUtils).bounceY(ball4, top+ball4.getRadius(), energyLossTop);
+		verify(ballUtils).bounceX(ball5, left+ball5.getRadius(), energyLossLeft);
+		verify(ballUtils).bounceY(ball5, top+ball5.getRadius(), energyLossTop);
 	}
 
 }

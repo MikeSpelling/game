@@ -1,4 +1,4 @@
-package mike;
+package game;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,8 +6,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import utils.BallUtils;
+import utils.CollisionDetector;
+import utils.MotionX;
+import utils.MotionY;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
+
+import models.Ball;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +22,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
-public class BallTest {
+public class BallUtilsTest {
+	
+	BallUtils ballUtils = new BallUtils();
 	
 	double energyLoss = 1;
 	double errorMargin = 0.01;
@@ -44,7 +53,7 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertFalse("Balls should not intersect", ball.contains(otherBall));
+		assertFalse("Balls should not intersect", ballUtils.contains(ball, otherBall));
 	}
 	
 	@Test
@@ -58,7 +67,7 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
 	}
 	
 	@Test
@@ -72,7 +81,7 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
 	}
 	
 	@Test
@@ -86,7 +95,7 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
 	}
 	
 	@Test
@@ -103,8 +112,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -124,8 +133,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -145,8 +154,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -166,8 +175,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -187,8 +196,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -208,8 +217,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -229,8 +238,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -250,8 +259,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -271,8 +280,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0);
 		assertEquals("Y Position", expectedY, point.getY(), 0);
@@ -292,8 +301,8 @@ public class BallTest {
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX1, motionY1, energyLoss);
 		
-		assertTrue("Balls should intersect", ball.contains(otherBall));
-		Point2D point = ball.getPointOfContact(otherBall);
+		assertTrue("Balls should intersect", ballUtils.contains(ball, otherBall));
+		Point2D point = ballUtils.getPointOfContact(ball, otherBall);
 		
 		assertEquals("X Position", expectedX, point.getX(), 0.001);
 		assertEquals("Y Position", expectedY, point.getY(), 0.001);
@@ -324,10 +333,10 @@ public class BallTest {
 		
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss1);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, energyLoss2);		
-		assertTrue("Balls should collide", ball.contains(otherBall));
+		assertTrue("Balls should collide", ballUtils.contains(ball, otherBall));
 		
 		// WHEN
-		ball.collide(otherBall);
+		ballUtils.collide(ball, otherBall);
 		
 		//THEN
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
@@ -362,10 +371,10 @@ public class BallTest {
 		
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss1);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, energyLoss2);		
-		assertTrue("Balls should collide", ball.contains(otherBall));
+		assertTrue("Balls should collide", ballUtils.contains(ball, otherBall));
 		
 		// WHEN
-		ball.collide(otherBall);
+		ballUtils.collide(ball, otherBall);
 		
 		//THEN
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
@@ -400,10 +409,10 @@ public class BallTest {
 		
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss1);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, energyLoss2);		
-		assertTrue("Balls should collide", ball.contains(otherBall));
+		assertTrue("Balls should collide", ballUtils.contains(ball, otherBall));
 		
 		// WHEN
-		ball.collide(otherBall);
+		ballUtils.collide(ball, otherBall);
 		
 		//THEN
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
@@ -438,10 +447,10 @@ public class BallTest {
 		
 		Ball ball = new Ball(x1, y1, radius1, mass1, color, motionX1, motionY1, energyLoss1);
 		Ball otherBall = new Ball(x2, y2, radius2, mass2, color, motionX2, motionY2, energyLoss2);		
-		assertTrue("Balls should collide", ball.contains(otherBall));
+		assertTrue("Balls should collide", ballUtils.contains(ball, otherBall));
 		
 		// WHEN
-		ball.collide(otherBall);
+		ballUtils.collide(ball, otherBall);
 		
 		//THEN
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;

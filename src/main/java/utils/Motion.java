@@ -1,6 +1,8 @@
-package mike;
+package utils;
 
 import java.applet.AudioClip;
+
+import models.Ball;
 
 public abstract class Motion {
 
