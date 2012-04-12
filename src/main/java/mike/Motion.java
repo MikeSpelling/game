@@ -6,39 +6,33 @@ public abstract class Motion {
 
 	private final double initialAcceleration;
 	private long timeLastUpdated;
-	private double pxToMetres;
-	private double metresToPx;
 	private double velocity;
 	private double acceleration;
-	private double displacement;
 
 	public static enum Status {STOPPED, MOVING};
 	public Status status;
 
 	private AudioClip bounceAudio;
 	
-	public abstract void collide(double mass, int radius, Ball otherBall, double energyLoss, double positionHit);
+	public abstract void collide(double mass, double radius, Ball otherBall, double energyLoss, double positionHit);
 
 
-	public Motion(int pos, double velocity, double acceleration, double pxToMetres, AudioClip bounceAudio) {
-		this.pxToMetres = pxToMetres;
-		this.displacement = pos*this.pxToMetres;
+	public Motion(double velocity, double acceleration, AudioClip bounceAudio) {
 		this.velocity = velocity;
 		this.initialAcceleration = acceleration;
 		this.acceleration = initialAcceleration;
-		this.metresToPx = 1/this.pxToMetres;
 		this.bounceAudio = bounceAudio;
 		this.timeLastUpdated = System.nanoTime();
 	}
 
-	public double updateDisplacement() {
+	public double updateDisplacement(double displacement) {
 		double time = dt();
 		// Velocity = U at this point so S = Ut + (at^2)/2
-		displacement += (velocity*time) + ((acceleration*time*time)/2);
+		double newDisplacement = displacement + (velocity*time) + ((acceleration*time*time)/2);
 		// V = U + at
 		velocity = velocity + (acceleration * time);
 		timeLastUpdated = System.nanoTime();
-		return displacement;
+		return newDisplacement;
 	}
 
 	/**
@@ -50,7 +44,7 @@ public abstract class Motion {
 	 * @param energyLossThroughBounce
 	 * @return
 	 */
-	public void bounce(double boundary, double energyLossThroughBounce) {
+	public double bounce(double displacement, double boundary, double energyLossThroughBounce) {
 		double distancePastBoundary = displacement-boundary;
 		double velocityAsHitsBoundarySquared = (velocity*velocity)-(2*acceleration*distancePastBoundary);
 		
@@ -76,6 +70,7 @@ public abstract class Motion {
 		else stopMotion(); // Cannot sqrt negative - something gone wrong?
 		
 		//bounceAudio.play();
+		return displacement;
 	}
 
 	public void applyForce(double force, double mass) {
@@ -107,20 +102,8 @@ public abstract class Motion {
 		this.acceleration = acceleration;
 	}
 
-	protected void setDisplacement(double displacement) {
-		this.displacement = displacement;
-	}
-
 	protected void setTimeLastUpdated(long timeLastUpdated) {
 		this.timeLastUpdated = timeLastUpdated;
-	}
-
-	protected void setPxToMetres(double pxToMetres) {
-		this.pxToMetres = pxToMetres;
-	}
-
-	protected void setMetresToPx(double metresToPx) {
-		this.metresToPx = metresToPx;
 	}
 
 	protected double getVelocity() {
@@ -131,20 +114,8 @@ public abstract class Motion {
 		return acceleration;
 	}
 
-	protected double getDisplacement() {
-		return displacement;
-	}
-
 	protected long getTimeLastUpdated() {
 		return timeLastUpdated;
-	}
-
-	protected double getPxToMetres() {
-		return pxToMetres;
-	}
-
-	protected double getMetresToPx() {
-		return metresToPx;
 	}
 
 }

@@ -2,10 +2,8 @@ package mike;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import java.awt.Color;
@@ -101,18 +99,13 @@ public class CollisionDetectorTest {
 		int radius = 1;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX, never()).bounce(anyDouble(), anyDouble());
-		verify(motionY, never()).bounce(anyDouble(), anyDouble());
+		verify(motionX, never()).bounce(anyDouble(), anyDouble(), anyDouble());
+		verify(motionY, never()).bounce(anyDouble(), anyDouble(), anyDouble());
 	}
 	
 	@Test
@@ -122,18 +115,13 @@ public class CollisionDetectorTest {
 		int radius = 1;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(left+radius, energyLossLeft);
-		verify(motionY, never()).bounce(anyDouble(), anyDouble());
+		verify(motionX).bounce(x, left+radius, energyLossLeft);
+		verify(motionY, never()).bounce(anyDouble(), anyDouble(), anyDouble());
 	}
 	
 	@Test
@@ -143,18 +131,13 @@ public class CollisionDetectorTest {
 		int radius = 1;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(right-radius, energyLossRight);
-		verify(motionY, never()).bounce(anyDouble(), anyDouble());
+		verify(motionX).bounce(x, right-radius, energyLossRight);
+		verify(motionY, never()).bounce(anyDouble(), anyDouble(), anyDouble());
 	}
 	
 	@Test
@@ -164,18 +147,13 @@ public class CollisionDetectorTest {
 		int radius = 1;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX, never()).bounce(anyDouble(), anyDouble());
-		verify(motionY).bounce(top+radius, energyLossTop);
+		verify(motionX, never()).bounce(anyDouble(), anyDouble(), anyDouble());
+		verify(motionY).bounce(y, top+radius, energyLossTop);
 	}
 	
 	@Test
@@ -185,18 +163,13 @@ public class CollisionDetectorTest {
 		int radius = 1;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX, never()).bounce(anyDouble(), anyDouble());
-		verify(motionY).bounce(bottom-radius, energyLossBottom);
+		verify(motionX, never()).bounce(anyDouble(), anyDouble(), anyDouble());
+		verify(motionY).bounce(y, bottom-radius, energyLossBottom);
 	}
 	
 	@Test
@@ -206,18 +179,13 @@ public class CollisionDetectorTest {
 		int radius = 1;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(left+radius, energyLossLeft);
-		verify(motionY).bounce(bottom-radius, energyLossBottom);
+		verify(motionX).bounce(x, left+radius, energyLossLeft);
+		verify(motionY).bounce(y, bottom-radius, energyLossBottom);
 	}
 	
 	@Test
@@ -227,18 +195,13 @@ public class CollisionDetectorTest {
 		int radius = 11;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(right-radius, energyLossRight);
-		verify(motionY).bounce(bottom-radius, energyLossBottom);
+		verify(motionX).bounce(x, right-radius, energyLossRight);
+		verify(motionY).bounce(y, bottom-radius, energyLossBottom);
 	}
 	
 	@Test
@@ -248,61 +211,53 @@ public class CollisionDetectorTest {
 		int radius = 1;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(left+radius, energyLossLeft);
-		verify(motionY).bounce(top+radius, energyLossTop);
+		verify(motionX).bounce(x, left+radius, energyLossLeft);
+		verify(motionY).bounce(y, top+radius, energyLossTop);
 	}
 	
 	@Test
 	public void testDetectBoundaryTopRight() throws Exception {
 		int x = 11;
 		int y = 1;
-		int radius = 11;
+		int radius = 5;
 		double mass = 1;
 		double energyLoss = 1.1;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
 		
 		Ball ball = new Ball(x, y, radius, mass, color, motionX, motionY, energyLoss);
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX).bounce(right-radius, energyLossRight);
-		verify(motionY).bounce(top+radius, energyLossTop);
+		verify(motionX).bounce(x, right-radius, energyLossRight);
+		verify(motionY).bounce(y, top+radius, energyLossTop);
 	}
 	
 	@Test
 	public void testDetectCollisionsAndBoundary() throws Exception {
-		int x = 0;
-		int y = 0;
-		double pxToMetres = 1;
-		when(motionX.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionX.getDisplacement()).thenReturn(x*pxToMetres);
-		when(motionY.getPxToMetres()).thenReturn(pxToMetres);
-		when(motionY.getDisplacement()).thenReturn(y*pxToMetres);
-		
 		when(ball1.getMotionX()).thenReturn(motionX);
 		when(ball1.getMotionY()).thenReturn(motionY);
+		when(ball1.getX()).thenReturn(1.0);
+		when(ball1.getRadius()).thenReturn(5.0);
 		when(ball2.getMotionX()).thenReturn(motionX);
 		when(ball2.getMotionY()).thenReturn(motionY);
+		when(ball2.getX()).thenReturn(1.0);
+		when(ball2.getRadius()).thenReturn(5.0);
 		when(ball3.getMotionX()).thenReturn(motionX);
 		when(ball3.getMotionY()).thenReturn(motionY);
+		when(ball3.getX()).thenReturn(1.0);
+		when(ball3.getRadius()).thenReturn(5.0);
 		when(ball4.getMotionX()).thenReturn(motionX);
 		when(ball4.getMotionY()).thenReturn(motionY);
+		when(ball4.getX()).thenReturn(1.0);
+		when(ball4.getRadius()).thenReturn(5.0);
 		when(ball5.getMotionX()).thenReturn(motionX);
 		when(ball5.getMotionY()).thenReturn(motionY);
+		when(ball5.getX()).thenReturn(1.0);
+		when(ball5.getRadius()).thenReturn(5.0);
 		
 		when(ball1.contains(ball2)).thenReturn(true);
 		when(ball1.contains(ball3)).thenReturn(false);
@@ -341,8 +296,16 @@ public class CollisionDetectorTest {
 		// last ball already taken into account
 		verify(ball5, never()).collide(any(Ball.class));
 		
-		verify(motionX, times(5)).bounce(anyDouble(), eq(energyLossLeft));
-		verify(motionY, times(5)).bounce(anyDouble(), eq(energyLossTop));
+		verify(ball1).bounceX(left+ball1.getRadius(), energyLossLeft);
+		verify(ball1).bounceY(top+ball1.getRadius(), energyLossTop);
+		verify(ball2).bounceX(left+ball2.getRadius(), energyLossLeft);
+		verify(ball2).bounceY(top+ball2.getRadius(), energyLossTop);
+		verify(ball3).bounceX(left+ball3.getRadius(), energyLossLeft);
+		verify(ball3).bounceY(top+ball3.getRadius(), energyLossTop);
+		verify(ball4).bounceX(left+ball4.getRadius(), energyLossLeft);
+		verify(ball4).bounceY(top+ball4.getRadius(), energyLossTop);
+		verify(ball5).bounceX(left+ball5.getRadius(), energyLossLeft);
+		verify(ball5).bounceY(top+ball5.getRadius(), energyLossTop);
 	}
 
 }

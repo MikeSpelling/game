@@ -6,8 +6,6 @@ import java.util.ArrayList;
 /**
  * 
  * @author Mike
- * 
- * Deals in metres, not px
  *
  */
 public class CollisionDetector {
@@ -57,30 +55,30 @@ public class CollisionDetector {
 	}
 	
 	public void detectBoundary(Ball ball) {
-		double radius = ball.getRadiusMetres();
+		double radius = ball.getRadius();
 		double rightCalibrated = rightBoundary.location - radius;
 		double leftCalibrated = leftBoundary.location + radius;
 		double topCalibrated = topBoundary.location + radius;
 		double bottomCalibrated = bottomBoundary.location - radius;
 		
-		if (ball.getxDisplacement() >= rightCalibrated) {
+		if (ball.getX() >= rightCalibrated) {
 			ball.bounceX(rightCalibrated, rightBoundary.energyLoss);
 		}
-		if (ball.getxDisplacement() <= leftCalibrated) {
-			ball.getMotionX().bounce(leftCalibrated, leftBoundary.energyLoss);
+		if (ball.getX() <= leftCalibrated) {
+			ball.bounceX(leftCalibrated, leftBoundary.energyLoss);
 		}		
-		if (ball.getyDisplacement() >= bottomCalibrated) {
-			ball.getMotionY().bounce(bottomCalibrated, bottomBoundary.energyLoss);
+		if (ball.getY() >= bottomCalibrated) {
+			ball.bounceY(bottomCalibrated, bottomBoundary.energyLoss);
 		}
-		if (ball.getyDisplacement() <= topCalibrated) {
-			ball.getMotionY().bounce(topCalibrated, topBoundary.energyLoss);
+		if (ball.getY() <= topCalibrated) {
+			ball.bounceY(topCalibrated, topBoundary.energyLoss);
 		}	
 		
 		// Check hasnt bounced back past another boundary
-		if (ball.getxDisplacement() >= rightCalibrated) ball.setxDisplacement(rightCalibrated);
-		else if (ball.getxDisplacement() <= leftCalibrated) ball.setxDisplacement(leftCalibrated);
-		if (ball.getyDisplacement() >= bottomCalibrated) ball.setyDisplacement(bottomCalibrated);
-		else if (ball.getyDisplacement() <= topCalibrated) ball.setyDisplacement(topCalibrated);
+		if (ball.getX() > rightCalibrated) ball.setX(rightCalibrated);
+		else if (ball.getX() < leftCalibrated) ball.setX(leftCalibrated);
+		if (ball.getY() > bottomCalibrated) ball.setY(bottomCalibrated);
+		else if (ball.getY() < topCalibrated) ball.setY(topCalibrated);
 	}
 	
 	private class Boundary {
