@@ -16,15 +16,16 @@ import mike.Motion.Status;
  */
 public class Ball {
 
-	private final MotionX motionX;
-	private final MotionY motionY;
-	private double energyLoss;	
+	private MotionX motionX;
+	private MotionY motionY;
 	
+	private Color color;
+	
+	private double energyLoss;	
 	private double mass;
 	private double radius;
 	private double x;
 	private double y;
-	private Color color;
 
 
 	public Ball(double x, double y, double radius, double mass, Color color, MotionX motionX, MotionY motionY, double energyLoss) {
@@ -42,8 +43,8 @@ public class Ball {
 
 	public void updatePosition() {
 		// Update and retrieve displacements if moving
-		if (isXMoving()) x = motionX.updateDisplacement(x);
-		if (isYMoving()) y = motionY.updateDisplacement(y);
+		if (motionX.isMoving()) x = motionX.updateDisplacement(x);
+		if (motionY.isMoving()) y = motionY.updateDisplacement(y);
 	}
 
 	/**
@@ -158,14 +159,6 @@ public class Ball {
 		buffer.setColor(color);
 		buffer.fillOval ((int)Math.round((x - radius)*scale), (int)Math.round((y - radius)*scale),
 				(int)Math.round((2 * radius)*scale), (int)Math.round((2 * radius)*scale));
-	}
-
-	public boolean isXMoving() {
-		return motionX.status == Status.MOVING;
-	}
-
-	public boolean isYMoving() {
-		return motionY.status == Status.MOVING;
 	}
 
 	public MotionX getMotionX() {

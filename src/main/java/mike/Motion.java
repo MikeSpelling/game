@@ -8,9 +8,9 @@ public abstract class Motion {
 	private long timeLastUpdated;
 	private double velocity;
 	private double acceleration;
+	private Status status;
 
 	public static enum Status {STOPPED, MOVING};
-	public Status status;
 
 	private AudioClip bounceAudio;
 	
@@ -26,7 +26,7 @@ public abstract class Motion {
 	}
 
 	public double updateDisplacement(double displacement) {
-		double time = dt();
+		double time = (double)(System.nanoTime() - timeLastUpdated)*(double)(0.000000001);
 		// Velocity = U at this point so S = Ut + (at^2)/2
 		double newDisplacement = displacement + (velocity*time) + ((acceleration*time*time)/2);
 		// V = U + at
@@ -88,33 +88,33 @@ public abstract class Motion {
 		velocity = 0;
 		acceleration = 0;
 		status = Status.STOPPED;
+	}	
+	
+	public boolean isMoving() {
+		return status == Status.MOVING;
 	}
 
-	protected double dt() {
-		return (double)(System.nanoTime() - timeLastUpdated)*(double)(0.000000001);
-	}
-
-	protected void setVelocity(double velocity) {
+	public void setVelocity(double velocity) {
 		this.velocity = velocity;
 	}
 
-	protected void setAcceleration(double acceleration) {
+	public void setAcceleration(double acceleration) {
 		this.acceleration = acceleration;
 	}
 
-	protected void setTimeLastUpdated(long timeLastUpdated) {
+	public void setTimeLastUpdated(long timeLastUpdated) {
 		this.timeLastUpdated = timeLastUpdated;
 	}
 
-	protected double getVelocity() {
+	public double getVelocity() {
 		return velocity;
 	}
 
-	protected double getAcceleration() {
+	public double getAcceleration() {
 		return acceleration;
 	}
 
-	protected long getTimeLastUpdated() {
+	public long getTimeLastUpdated() {
 		return timeLastUpdated;
 	}
 
