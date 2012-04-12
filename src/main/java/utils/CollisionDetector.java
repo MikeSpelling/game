@@ -1,5 +1,8 @@
 package utils;
 
+import game.Game;
+
+import java.applet.AudioClip;
 import java.util.ArrayList;
 
 import models.Ball;
@@ -20,16 +23,22 @@ public class CollisionDetector {
 	private Boundary rightBoundary;
 	
 	private BallUtils ballUtils;
+	private AudioClip bounceAudio;
+	private AudioClip collideAudio;
 	
 	
 	public CollisionDetector(double top, double energyLossTop, double bottom, double energyLossBottom,
-			double left, double energyLossLeft, double right, double energyLossRight, BallUtils ballUtils) {
+			double left, double energyLossLeft, double right, double energyLossRight, 
+			BallUtils ballUtils, AudioClip bounceAudio, AudioClip collideAudio) {
 		
 		this.topBoundary = new Boundary(top, energyLossTop);
 		this.bottomBoundary = new Boundary(bottom, energyLossBottom);
 		this.leftBoundary = new Boundary(left, energyLossLeft);
 		this.rightBoundary = new Boundary(right, energyLossRight);
+		
 		this.ballUtils = ballUtils;
+		this.bounceAudio = bounceAudio;
+		this.collideAudio = collideAudio;
 	}
 	
 	public void detectCollisionsAndBoundary(ArrayList<Ball> balls) {
@@ -56,6 +65,7 @@ public class CollisionDetector {
 				Ball otherBall = balls.get(k);
 				if (ballUtils.contains(ball, otherBall)) {
 					ballUtils.collide(ball, otherBall);
+					if(!Game.muted) collideAudio.play();
 				}
 			}
 		}
@@ -68,17 +78,21 @@ public class CollisionDetector {
 		double topCalibrated = topBoundary.position + radius;
 		double bottomCalibrated = bottomBoundary.position - radius;
 		
-		if (ball.getX() >= rightCalibrated) {
+		if (ball.getX() > rightCalibrated) {
 			ballUtils.bounceX(ball, rightCalibrated, rightBoundary.energyLoss);
+			if(!Game.muted) bounceAudio.play();
 		}
-		if (ball.getX() <= leftCalibrated) {
+		if (ball.getX() < leftCalibrated) {
 			ballUtils.bounceX(ball, leftCalibrated, leftBoundary.energyLoss);
+			if(!Game.muted) bounceAudio.play();
 		}		
-		if (ball.getY() >= bottomCalibrated) {
+		if (ball.getY() > bottomCalibrated) {
 			ballUtils.bounceY(ball, bottomCalibrated, bottomBoundary.energyLoss);
+			if(!Game.muted) bounceAudio.play();
 		}
-		if (ball.getY() <= topCalibrated) {
+		if (ball.getY() < topCalibrated) {
 			ballUtils.bounceY(ball, topCalibrated, topBoundary.energyLoss);
+			if(!Game.muted) bounceAudio.play();
 		}	
 		
 		// Check hasnt bounced back past another boundary

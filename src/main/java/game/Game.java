@@ -35,8 +35,9 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	private static final long serialVersionUID = -3248452394993145828L;
 
-	public static final double accelerationDueToGravity = 9.80665;
+	public final static double accelerationDueToGravity = 9.80665;
 	public final static boolean DEBUG = false;
+	public final static boolean muted = true;
 
 	private int widthPx;
 	private int heightPx;
@@ -62,10 +63,10 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		// Defaults
 		int numBalls = 3;
 		int radius = 20;
-		double energyLossTop = 1;
-		double energyLossBottom = 1;
-		double energyLossLeft = 1;
-		double energyLossRight = 1;
+		double energyLossTop = 0.8;
+		double energyLossBottom = 0.8;
+		double energyLossLeft = 0.8;
+		double energyLossRight = 0.8;
 		double heightMetres = 10;
 		double initialVelocityX = 0;
 		double initialVelocityY = 0;
@@ -89,15 +90,16 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		if (paramAccelerationX != null) accelerationX = Integer.parseInt(paramAccelerationX);
 		if (paramAccelerationY != null) accelerationX = Integer.parseInt(paramAccelerationY);
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
-
+		
 		metresToPx = (double)heightPx/heightMetres;
 		double widthMetres = widthPx*(1/metresToPx);
-		collisionDetector =	new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom, 
-				0, energyLossLeft, widthMetres, energyLossRight, ballUtils);
-
+		
 		// Get files
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
 		backgroundImage = getImage(getCodeBase(), "land.GIF");
+		
+		collisionDetector =	new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom, 
+				0, energyLossLeft, widthMetres, energyLossRight, ballUtils, bounceAudio, bounceAudio);
 
 		bufferImage = createImage(widthPx, heightPx);
 		bufferGraphics = bufferImage.getGraphics();
@@ -118,8 +120,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 				double energyLoss = 1;
 
 				balls.add(new Ball(xPos*(1/metresToPx), y*(1/metresToPx), newRadius*(1/metresToPx), mass, color, 
-						new MotionX(initialVelocityX, accelerationX, bounceAudio),
-						new MotionY(initialVelocityY, accelerationY, bounceAudio),
+						new MotionX(initialVelocityX, accelerationX),
+						new MotionY(initialVelocityY, accelerationY),
 						energyLoss));
 			}
 		}

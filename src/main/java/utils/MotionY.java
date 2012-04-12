@@ -1,13 +1,11 @@
 package utils;
 
-import java.applet.AudioClip;
-
 import models.Ball;
 
 public class MotionY extends Motion {
 
-	public MotionY(double initVelocity, double acceleration, AudioClip bounceAudio) {
-		super(initVelocity, acceleration, bounceAudio);
+	public MotionY(double initVelocity, double acceleration) {
+		super(initVelocity, acceleration);
 	}
 	
 	public void collide(double mass, double radius, Ball otherBall, double energyLoss, double positionHit) {

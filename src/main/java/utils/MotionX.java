@@ -1,15 +1,13 @@
 package utils;
 
-import java.applet.AudioClip;
-
 import models.Ball;
 
 public class MotionX extends Motion {
 
-	private final double friction = 0.5;
+//	private final double friction = 0.5;
 
-	public MotionX(double initVelocity, double acceleration, AudioClip bounceAudio) {
-		super(initVelocity, acceleration, bounceAudio);
+	public MotionX(double initVelocity, double acceleration) {
+		super(initVelocity, acceleration);
 	}
 	
 	public void collide(double mass, double radius, Ball otherBall, double energyLoss, double positionHit) {

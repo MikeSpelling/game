@@ -2,10 +2,6 @@ package game;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-
-
-import java.applet.AudioClip;
-
 import models.Ball;
 
 import org.junit.Before;
@@ -28,11 +24,9 @@ public class MotionTest {
 	
 	private double errorMargin = 0.01;
 	private double nanoToSeconds = 0.000000001;
-	private double energyLoss = 1;
 	
 	@Mock private Ball ball1;
 	@Mock private Ball ball2;
-	@Mock private AudioClip bounceAudio;
 
 	
 	@Before
@@ -43,7 +37,7 @@ public class MotionTest {
 	@Test
 	public void testNoMovement() throws Exception {
 
-		MotionX motionX = new MotionX(0, 0, bounceAudio);
+		MotionX motionX = new MotionX(0, 0);
 		motionX.startMotion();
 
 		Thread.sleep(1000);
@@ -60,7 +54,7 @@ public class MotionTest {
 		double velocity = 10;
 		double acceleration = 0;
 
-		MotionX motionX = new MotionX(velocity, acceleration, bounceAudio);
+		MotionX motionX = new MotionX(velocity, acceleration);
 		motionX.startMotion();
 		long startTime = System.nanoTime();
 
@@ -94,7 +88,7 @@ public class MotionTest {
 		double velocity = 0;
 		double acceleration = 10;
 
-		MotionX motionX = new MotionX(velocity, acceleration, bounceAudio);
+		MotionX motionX = new MotionX(velocity, acceleration);
 		motionX.startMotion();
 		long startTime = System.nanoTime();
 
@@ -130,7 +124,7 @@ public class MotionTest {
 		double initVelocity = -20;
 		double acceleration = 10;
 
-		MotionX motionX = new MotionX(initVelocity, acceleration, bounceAudio);
+		MotionX motionX = new MotionX(initVelocity, acceleration);
 		motionX.startMotion();
 		long startTime = System.nanoTime();
 
@@ -167,14 +161,15 @@ public class MotionTest {
 		double position = 102;
 		double velocity = 10;
 		double acceleration = 10;
+		double energyLoss = 0.9;
 
-		MotionX motionX = new MotionX(velocity, acceleration, bounceAudio);
+		MotionX motionX = new MotionX(velocity, acceleration);
 		motionX.startMotion();
 
-		double actualDisplacement = motionX.bounce(position, boundary, 1);
+		double actualDisplacement = motionX.bounce(position, boundary, energyLoss);
 		
-		assertEquals("Velocity", -5.49, motionX.getVelocity(), errorMargin);
-		assertEquals("Displacement", 98.51, actualDisplacement, errorMargin);
+		assertEquals("Velocity", -5.49*energyLoss, motionX.getVelocity(), errorMargin);
+		assertEquals("Displacement", 98.51*energyLoss, actualDisplacement, errorMargin);
 	}
 	
 	@Test
@@ -183,14 +178,15 @@ public class MotionTest {
 		double position = 2;
 		double velocity = -10;
 		double acceleration = 10;
+		double energyLoss = 0.8;
 
-		MotionX motionX = new MotionX(velocity, acceleration, bounceAudio);
+		MotionX motionX = new MotionX(velocity, acceleration);
 		motionX.startMotion();
 
-		double actualDisplacement = motionX.bounce(position, boundary, 1);
+		double actualDisplacement = motionX.bounce(position, boundary, energyLoss);
 		
-		assertEquals("Velocity", 15.30, motionX.getVelocity(), errorMargin);
-		assertEquals("Displacement", 8.70, actualDisplacement, errorMargin);
+		assertEquals("Velocity", 15.30*energyLoss, motionX.getVelocity(), errorMargin);
+		assertEquals("Displacement", 8.70*energyLoss, actualDisplacement, errorMargin);
 	}
 	
 	@Test
@@ -198,12 +194,13 @@ public class MotionTest {
 		// GIVEN
 		double acc = 0;		
 		double radius1 = 10;
+		double energyLoss = 0.5;
 		
 		double mass1 = 0.1;
 		double xVelocity1 = -10;
 		double yVelocity1 = 0;
-		MotionX motionX1 = new MotionX(xVelocity1, acc, bounceAudio);
-		MotionY motionY1 = new MotionY(yVelocity1, acc, bounceAudio);
+		MotionX motionX1 = new MotionX(xVelocity1, acc);
+		MotionY motionY1 = new MotionY(yVelocity1, acc);
 		when(ball1.getMass()).thenReturn(mass1);
 		when(ball1.getMotionX()).thenReturn(motionX1);
 		when(ball1.getMotionY()).thenReturn(motionY1);
@@ -212,8 +209,8 @@ public class MotionTest {
 		double mass2 = 0.2;
 		double xVelocity2 = 10;
 		double yVelocity2 = 0;
-		MotionX motionX2 = new MotionX(xVelocity2, acc, bounceAudio);
-		MotionY motionY2 = new MotionY(yVelocity2, acc, bounceAudio);	
+		MotionX motionX2 = new MotionX(xVelocity2, acc);
+		MotionY motionY2 = new MotionY(yVelocity2, acc);	
 		when(ball2.getMass()).thenReturn(mass2);
 		when(ball2.getMotionX()).thenReturn(motionX2);
 		when(ball2.getMotionY()).thenReturn(motionY2);
@@ -228,9 +225,9 @@ public class MotionTest {
 		motionY2.collide(mass2, radius2, ball1, energyLoss, yPositionHit);
 		
 		//THEN
-		double expectedVelocityX1 = 16.667;
+		double expectedVelocityX1 = 16.667*(energyLoss*energyLoss);
 		double expectedVelocityY1 = 0;
-		double expectedVelocityX2 = -3.333;
+		double expectedVelocityX2 = -3.333*(energyLoss*energyLoss);
 		double expectedVelocityY2 = 0;
 		
 		assertEquals("First balls X velocity", expectedVelocityX1, motionX1.getVelocity(), errorMargin);
@@ -244,12 +241,13 @@ public class MotionTest {
 		// GIVEN
 		double acc = 0;		
 		double radius1 = 10;
+		double energyLoss = 0.5;
 		
 		double mass1 = 0.3;
 		double xVelocity1 = 2;
 		double yVelocity1 = 0;
-		MotionX motionX1 = new MotionX(xVelocity1, acc, bounceAudio);
-		MotionY motionY1 = new MotionY(yVelocity1, acc, bounceAudio);
+		MotionX motionX1 = new MotionX(xVelocity1, acc);
+		MotionY motionY1 = new MotionY(yVelocity1, acc);
 		when(ball1.getMotionX()).thenReturn(motionX1);
 		when(ball1.getMotionY()).thenReturn(motionY1);
 		
@@ -257,8 +255,8 @@ public class MotionTest {
 		double mass2 = 0.4;
 		double xVelocity2 = -20;
 		double yVelocity2 = 0;
-		MotionX motionX2 = new MotionX(xVelocity2, acc, bounceAudio);
-		MotionY motionY2 = new MotionY(yVelocity2, acc, bounceAudio);		
+		MotionX motionX2 = new MotionX(xVelocity2, acc);
+		MotionY motionY2 = new MotionY(yVelocity2, acc);		
 		when(ball2.getMotionX()).thenReturn(motionX2);
 		when(ball2.getMotionY()).thenReturn(motionY2);
 		
@@ -272,9 +270,9 @@ public class MotionTest {
 		motionY2.collide(mass2, radius2,ball1, energyLoss, yPositionHit);
 		
 		//THEN
-		double expectedVelocityX1 = -23.143;
+		double expectedVelocityX1 = -23.143*(energyLoss*energyLoss);
 		double expectedVelocityY1 = 0;
-		double expectedVelocityX2 = -1.143;
+		double expectedVelocityX2 = -1.143*(energyLoss*energyLoss);
 		double expectedVelocityY2 = 0;
 		
 		assertEquals("First balls X velocity", expectedVelocityX1, motionX1.getVelocity(), errorMargin);

@@ -12,6 +12,7 @@ import utils.CollisionDetector;
 import utils.MotionX;
 import utils.MotionY;
 
+import java.applet.AudioClip;
 import java.awt.Color;
 import java.util.ArrayList;
 
@@ -49,7 +50,9 @@ public class CollisionDetectorTest {
 	
 	@Mock private BallUtils ballUtils;
 	
-	@Mock Color color;
+	@Mock private AudioClip audioClip;
+	
+	@Mock private Color color;
 	
 	
 	@Before
@@ -57,7 +60,7 @@ public class CollisionDetectorTest {
 		MockitoAnnotations.initMocks(this);
 		
 		collisionDetector = new CollisionDetector(top, energyLossTop, bottom, energyLossBottom, 
-				left, energyLossLeft, right, energyLossRight, ballUtils);
+				left, energyLossLeft, right, energyLossRight, ballUtils, audioClip, audioClip);
 		
 		balls.add(ball1); balls.add(ball2); balls.add(ball3); balls.add(ball4); balls.add(ball5);
 	}

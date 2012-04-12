@@ -1,7 +1,5 @@
 package utils;
 
-import java.applet.AudioClip;
-
 import models.Ball;
 
 public abstract class Motion {
@@ -12,18 +10,15 @@ public abstract class Motion {
 	private double acceleration;
 	private Status status;
 
-	public static enum Status {STOPPED, MOVING};
-
-	private AudioClip bounceAudio;
+	public static enum Status {STOPPED, MOVING};	
 	
 	public abstract void collide(double mass, double radius, Ball otherBall, double energyLoss, double positionHit);
 
 
-	public Motion(double velocity, double acceleration, AudioClip bounceAudio) {
+	public Motion(double velocity, double acceleration) {
 		this.velocity = velocity;
 		this.initialAcceleration = acceleration;
 		this.acceleration = initialAcceleration;
-		this.bounceAudio = bounceAudio;
 		this.timeLastUpdated = System.nanoTime();
 	}
 
@@ -71,7 +66,6 @@ public abstract class Motion {
 		}
 		else stopMotion(); // Cannot sqrt negative - something gone wrong?
 		
-		//bounceAudio.play();
 		return displacement;
 	}
 
