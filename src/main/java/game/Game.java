@@ -62,7 +62,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		
 		// Defaults
 		int numBalls = 3;
-		int radius = 20;
+		double radius = 20;
 		double energyLossTop = 0.8;
 		double energyLossBottom = 0.8;
 		double energyLossLeft = 0.8;
@@ -83,12 +83,12 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		String paramAccelerationX = this.getParameter("AccelerationX");
 		String paramAccelerationY = this.getParameter("AccelerationY");
 		String paramNumBalls = this.getParameter("NumBalls");
-		if (paramRadius != null) radius = Integer.parseInt(paramRadius);
-		if (paramHeightMetres != null) heightMetres = Integer.parseInt(paramHeightMetres);
-		if (paramInitialVelocityX != null) initialVelocityX = Integer.parseInt(paramInitialVelocityX);
-		if (paramInitialVelocityY != null) initialVelocityY = Integer.parseInt(paramInitialVelocityY);
-		if (paramAccelerationX != null) accelerationX = Integer.parseInt(paramAccelerationX);
-		if (paramAccelerationY != null) accelerationX = Integer.parseInt(paramAccelerationY);
+		if (paramRadius != null) radius = Double.parseDouble(paramRadius);
+		if (paramHeightMetres != null) heightMetres = Double.parseDouble(paramHeightMetres);
+		if (paramInitialVelocityX != null) initialVelocityX = Double.parseDouble(paramInitialVelocityX);
+		if (paramInitialVelocityY != null) initialVelocityY = Double.parseDouble(paramInitialVelocityY);
+		if (paramAccelerationX != null) accelerationX = Double.parseDouble(paramAccelerationX);
+		if (paramAccelerationY != null) accelerationY = Double.parseDouble(paramAccelerationY);
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
 		
 		metresToPx = (double)heightPx/heightMetres;
@@ -114,7 +114,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 			balls = new ArrayList<Ball>();
 			for (int i = 0; i < numBalls; i++) {
 				Color color = new Color((float)(i)/(float)(numBalls), (float)(i)/(float)(numBalls), (float)(i)/(float)(numBalls));
-				int newRadius = (radius*(1+i))/numBalls;
+				double newRadius = (radius*(1+i))/numBalls;
 				double mass = (double)(i+1)/10;
 				double xPos = x + (xSpacing*i);
 				double energyLoss = 1;
