@@ -19,6 +19,7 @@ import java.util.ArrayList;
 /**
  * Colliding balls
  * Create single x/y point of reference between ball/motion. Pass displacment into motion methods.
+ * Only Game should have a concept of pxToMetres - deal consistently elsewhere
  * Friction for x?
  * Tests
  * Circular gravity mode? Decide what the game should be - scroll background in x direction?
