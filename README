@@ -1,1 +1,2 @@
-An applet that implements SUVAT equations to make a ball bounce "realistically". The mouse can also be used to move the ball.
+An applet that implements SUVAT equations to make balls bounce "realistically". The mouse can also be used to move the balls.
+Simply open target/game.html in a browser to run the applet as it is.
