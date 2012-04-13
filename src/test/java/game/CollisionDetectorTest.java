@@ -1,27 +1,26 @@
 package game;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import utils.BallUtils;
-import utils.CollisionDetector;
-import utils.MotionX;
-import utils.MotionY;
 
 import java.applet.AudioClip;
 import java.awt.Color;
 import java.util.ArrayList;
 
 import models.Ball;
+import models.Motion;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import utils.BallUtils;
+import utils.CollisionDetector;
 
 
 public class CollisionDetectorTest {
@@ -39,8 +38,8 @@ public class CollisionDetectorTest {
 	
 	private ArrayList<Ball> balls = new ArrayList<Ball>();
 	
-	@Mock private MotionX motionX;
-	@Mock private MotionY motionY;
+	@Mock private Motion motionX;
+	@Mock private Motion motionY;
 	
 	@Mock private Ball ball1;
 	@Mock private Ball ball2;
@@ -118,8 +117,8 @@ public class CollisionDetectorTest {
 		
 		collisionDetector.detectBoundary(ball);
 		
-		verify(motionX, never()).bounce(anyDouble(), anyDouble(), anyDouble());
-		verify(motionY, never()).bounce(anyDouble(), anyDouble(), anyDouble());
+		verify(ballUtils, never()).bounceX(any(Ball.class), anyDouble(), anyDouble());
+		verify(ballUtils, never()).bounceY(any(Ball.class), anyDouble(), anyDouble());
 	}
 	
 	@Test

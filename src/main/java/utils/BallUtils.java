@@ -17,13 +17,20 @@ import models.Ball;
  */
 public class BallUtils {
 	
+	private MotionUtils motionUtils;
+	
+	
+	public BallUtils(MotionUtils motionUtils) {
+		this.motionUtils = motionUtils;
+	}
+	
 
 	public void updatePosition(Ball ball) {
 		// Update and retrieve displacements if moving
 		if (ball.getMotionX().isMoving())
-			ball.setX(ball.getMotionX().updateDisplacement(ball.getX()));
+			ball.setX(motionUtils.updateDisplacement(ball.getMotionX(), ball.getX()));
 		if (ball.getMotionY().isMoving())
-			ball.setY(ball.getMotionY().updateDisplacement(ball.getY()));
+			ball.setY(motionUtils.updateDisplacement(ball.getMotionY(), ball.getY()));
 	}
 
 	public boolean contains(Ball ball1, Ball ball2) {
@@ -48,8 +55,10 @@ public class BallUtils {
 		
 		double combinedEnergyLoss = ball1.getEnergyLoss() * ball2.getEnergyLoss();
 		
-		ball1.getMotionX().collide(ball1.getMass(), ball1.getRadius(), ball2, combinedEnergyLoss, xPositionHit);
-		ball1.getMotionY().collide(ball1.getMass(), ball1.getRadius(), ball2, combinedEnergyLoss, yPositionHit);
+		motionUtils.collide(ball1.getMotionX(), ball1.getMass(), ball1.getRadius(), 
+				ball2.getMotionX(), ball2.getMass(), ball2.getRadius(), combinedEnergyLoss, xPositionHit);
+		motionUtils.collide(ball1.getMotionY(), ball1.getMass(), ball1.getRadius(), 
+				ball2.getMotionY(), ball2.getMass(), ball2.getRadius(), combinedEnergyLoss, yPositionHit);
 	}
 
 	/**
@@ -119,11 +128,11 @@ public class BallUtils {
 	}
 	
 	public void bounceX(Ball ball, double boundary, double energyLoss) {
-		ball.setX(ball.getMotionX().bounce(ball.getX(), boundary, energyLoss));
+		ball.setX(motionUtils.bounce(ball.getMotionX(), ball.getX(), boundary, energyLoss));
 	}
 	
 	public void bounceY(Ball ball, double boundary, double energyLoss) {
-		ball.setY(ball.getMotionY().bounce(ball.getY(), boundary, energyLoss));
+		ball.setY(motionUtils.bounce(ball.getMotionY(), ball.getY(), boundary, energyLoss));
 	}
 	
 	public void paintBall(Ball ball, Graphics buffer, double scale) {

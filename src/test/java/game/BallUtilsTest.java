@@ -8,13 +8,13 @@ import static org.mockito.Mockito.when;
 
 import utils.BallUtils;
 import utils.CollisionDetector;
-import utils.MotionX;
-import utils.MotionY;
+import utils.MotionUtils;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
 import models.Ball;
+import models.Motion;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,22 +24,24 @@ import org.mockito.MockitoAnnotations;
 
 public class BallUtilsTest {
 	
-	BallUtils ballUtils = new BallUtils();
-	
 	double energyLoss = 1;
 	double errorMargin = 0.01;
 	
-	@Mock MotionX motionX1;
-	@Mock MotionY motionY1;
-	@Mock MotionX motionX2;
-	@Mock MotionY motionY2;
+	@Mock MotionUtils motionUtils;
+	@Mock Motion motionX1;
+	@Mock Motion motionY1;
+	@Mock Motion motionX2;
+	@Mock Motion motionY2;
 	@Mock CollisionDetector collisionDetector;
 	@Mock Color color;
+	
+	BallUtils ballUtils;	
 	
 	
 	@Before
 	public void before() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		ballUtils = new BallUtils(motionUtils);
 	}
 	
 	@Test
@@ -342,8 +344,8 @@ public class BallUtilsTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 110;
 		double yPositionHit = 100;
-		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
+		verify(motionUtils).collide(motionX1, mass1, radius1, motionX2, mass2, radius2, combinedEnergyLoss, xPositionHit);
+		verify(motionUtils).collide(motionY1, mass1, radius1, motionY2, mass2, radius2, combinedEnergyLoss, yPositionHit);
 	}
 	
 	@Test
@@ -380,8 +382,8 @@ public class BallUtilsTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 90;
 		double yPositionHit = 100;
-		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
+		verify(motionUtils).collide(motionX1, mass1, radius1, motionX2, mass2, radius2, combinedEnergyLoss, xPositionHit);
+		verify(motionUtils).collide(motionY1, mass1, radius1, motionY2, mass2, radius2, combinedEnergyLoss, yPositionHit);
 	}
 	
 	@Test
@@ -418,8 +420,8 @@ public class BallUtilsTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 100;
 		double yPositionHit = 120;
-		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
+		verify(motionUtils).collide(motionX1, mass1, radius1, motionX2, mass2, radius2, combinedEnergyLoss, xPositionHit);
+		verify(motionUtils).collide(motionY1, mass1, radius1, motionY2, mass2, radius2, combinedEnergyLoss, yPositionHit);
 	}
 	
 	@Test
@@ -456,8 +458,8 @@ public class BallUtilsTest {
 		double combinedEnergyLoss = energyLoss1 * energyLoss2;
 		double xPositionHit = 100;
 		double yPositionHit = 95;
-		verify(motionX1).collide(mass1, radius1, otherBall, combinedEnergyLoss, xPositionHit);
-		verify(motionY1).collide(mass1, radius1, otherBall, combinedEnergyLoss, yPositionHit);
+		verify(motionUtils).collide(motionX1, mass1, radius1, motionX2, mass2, radius2, combinedEnergyLoss, xPositionHit);
+		verify(motionUtils).collide(motionY1, mass1, radius1, motionY2, mass2, radius2, combinedEnergyLoss, yPositionHit);
 	}
 	
 }

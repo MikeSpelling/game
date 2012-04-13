@@ -3,10 +3,6 @@ package models;
 
 import java.awt.Color;
 
-import utils.MotionX;
-import utils.MotionY;
-
-
 
 /**
  * Model class to maintain the position, radius, mass, energyLoss, 
@@ -23,13 +19,13 @@ public class Ball {
 	private double mass;	
 	private double energyLoss;	
 	
-	private MotionX motionX;
-	private MotionY motionY;
+	private Motion motionX;
+	private Motion motionY;
 	
 	private Color color;
 
 
-	public Ball(double x, double y, double radius, double mass, Color color, MotionX motionX, MotionY motionY, double energyLoss) {
+	public Ball(double x, double y, double radius, double mass, Color color, Motion motionX, Motion motionY, double energyLoss) {
 		this.motionX = motionX;
 		this.motionY = motionY;
 		this.radius = radius;
@@ -80,19 +76,19 @@ public class Ball {
 		this.energyLoss = energyLoss;
 	}
 
-	public MotionX getMotionX() {
+	public Motion getMotionX() {
 		return motionX;
 	}
 
-	public void setMotionX(MotionX motionX) {
+	public void setMotionX(Motion motionX) {
 		this.motionX = motionX;
 	}
 
-	public MotionY getMotionY() {
+	public Motion getMotionY() {
 		return motionY;
 	}
 
-	public void setMotionY(MotionY motionY) {
+	public void setMotionY(Motion motionY) {
 		this.motionY = motionY;
 	}
 

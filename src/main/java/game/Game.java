@@ -3,7 +3,6 @@ package game;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.Color;
-import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
@@ -15,12 +14,11 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 
+import models.Ball;
+import models.Motion;
 import utils.BallUtils;
 import utils.CollisionDetector;
-import utils.MotionX;
-import utils.MotionY;
-
-import models.Ball;
+import utils.MotionUtils;
 
 
 /**
@@ -43,7 +41,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 	private int heightPx;
 	private double metresToPx;
 	
-	private BallUtils ballUtils = new BallUtils();
+	private MotionUtils motionUtils = new MotionUtils();
+	private BallUtils ballUtils = new BallUtils(motionUtils);
 	private ArrayList<Ball> balls;
 	private CollisionDetector collisionDetector;
 
@@ -120,8 +119,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 				double energyLoss = 1;
 
 				balls.add(new Ball(xPos*(1/metresToPx), y*(1/metresToPx), newRadius*(1/metresToPx), mass, color, 
-						new MotionX(initialVelocityX, accelerationX),
-						new MotionY(initialVelocityY, accelerationY),
+						new Motion(initialVelocityX, accelerationX),
+						new Motion(initialVelocityY, accelerationY),
 						energyLoss));
 			}
 		}
@@ -134,8 +133,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 	// Overridden run method for thread
 	public void run() {
 		for (Ball ball : balls) {
-			ball.getMotionX().startMotion();
-			ball.getMotionY().startMotion();
+			motionUtils.startMotion(ball.getMotionX());
+			motionUtils.startMotion(ball.getMotionY());
 		}
 		while(true) {
 			repaint(); // Calls update, then paint
@@ -165,15 +164,6 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		}
 	}
 
-	public boolean mouseDown (Event e, int x, int y) {
-		for (Ball ball : balls) {
-			ball.getMotionX().applyForce((double)(x-ball.getX())/widthPx, ball.getMass());
-			ball.getMotionY().applyForce((double)(y-ball.getY())/heightPx, ball.getMass());
-			//break; // REMOVE to affect all balls
-		}
-		return true; // Have to return something
-	}
-
 	// Method is called every time you enter the HTML - site with the applet
 	public void start() {
 
@@ -193,14 +183,14 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) { // Space bar
 			for (Ball ball : balls) {
-				ball.getMotionX().stopMotion();
-				ball.getMotionY().stopMotion();
+				motionUtils.stopMotion(ball.getMotionX());
+				motionUtils.stopMotion(ball.getMotionY());
 			}
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			for (Ball ball : balls) {
-				ball.getMotionX().startMotion();
-				ball.getMotionY().startMotion();
+				motionUtils.startMotion(ball.getMotionX());
+				motionUtils.startMotion(ball.getMotionY());
 			}
 		}
 	}
@@ -220,8 +210,8 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		double x = e.getX()*(1/metresToPx);
 		double y = e.getY()*(1/metresToPx);
 		for (Ball ball : balls) {
-			ball.getMotionX().applyForce((x-ball.getX())/(widthPx*(1/metresToPx)), ball.getMass());
-			ball.getMotionY().applyForce((y-ball.getY())/(heightPx*(1/metresToPx)), ball.getMass());
+			motionUtils.applyForce(ball.getMotionX(), (x-ball.getX())/(widthPx*(1/metresToPx)), ball.getMass());
+			motionUtils.applyForce(ball.getMotionY(), (y-ball.getY())/(heightPx*(1/metresToPx)), ball.getMass());
 			//break; // REMOVE to affect all balls
 		}
 	}
