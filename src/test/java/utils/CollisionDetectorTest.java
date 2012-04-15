@@ -1,4 +1,4 @@
-package game;
+package utils;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyDouble;

@@ -35,14 +35,15 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	public final static double accelerationDueToGravity = 9.80665;
 	public final static boolean DEBUG = false;
-	public final static boolean muted = true;
+	public static boolean MUTED = true;
+	public static boolean CIRCULAR = false;
 
 	private int widthPx;
 	private int heightPx;
 	private double metresToPx;
-	
-	private MotionUtils motionUtils = new MotionUtils();
-	private BallUtils ballUtils = new BallUtils(motionUtils);
+
+	private final MotionUtils motionUtils = new MotionUtils();
+	private final BallUtils ballUtils = new BallUtils(motionUtils);
 	private ArrayList<Ball> balls;
 	private CollisionDetector collisionDetector;
 
@@ -53,15 +54,15 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	// Method is called the first time you enter the HTML site with the applet
 	public void init() {
-		
+
 		setFocusable(true);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);
-		
+
 		// Defaults
-		int numBalls = 3;
-		double radius = 20;
+		int numBalls = 2;
+		double radius = 25;
 		double energyLossTop = 0.8;
 		double energyLossBottom = 0.8;
 		double energyLossLeft = 0.8;
@@ -82,6 +83,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		String paramAccelerationX = this.getParameter("AccelerationX");
 		String paramAccelerationY = this.getParameter("AccelerationY");
 		String paramNumBalls = this.getParameter("NumBalls");
+		String paramCircular = this.getParameter("Circular");
 		if (paramRadius != null) radius = Double.parseDouble(paramRadius);
 		if (paramHeightMetres != null) heightMetres = Double.parseDouble(paramHeightMetres);
 		if (paramInitialVelocityX != null) initialVelocityX = Double.parseDouble(paramInitialVelocityX);
@@ -89,15 +91,16 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		if (paramAccelerationX != null) accelerationX = Double.parseDouble(paramAccelerationX);
 		if (paramAccelerationY != null) accelerationY = Double.parseDouble(paramAccelerationY);
 		if (paramNumBalls != null) numBalls = Integer.parseInt(paramNumBalls);
-		
+		if (paramCircular != null) CIRCULAR = Boolean.parseBoolean(paramCircular);
+
 		metresToPx = (double)heightPx/heightMetres;
 		double widthMetres = widthPx*(1/metresToPx);
-		
+
 		// Get files
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
 		backgroundImage = getImage(getCodeBase(), "land.GIF");
-		
-		collisionDetector =	new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom, 
+
+		collisionDetector =	new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom,
 				0, energyLossLeft, widthMetres, energyLossRight, ballUtils, bounceAudio, bounceAudio);
 
 		bufferImage = createImage(widthPx, heightPx);
@@ -108,7 +111,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 			double xSpacing = (widthPx/numBalls);
 			double x = (widthPx/numBalls)/2;
 			double y = radius + (heightPx/4);
-			
+
 			// Create balls
 			balls = new ArrayList<Ball>();
 			for (int i = 0; i < numBalls; i++) {
@@ -118,7 +121,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 				double xPos = x + (xSpacing*i);
 				double energyLoss = 1;
 
-				balls.add(new Ball(xPos*(1/metresToPx), y*(1/metresToPx), newRadius*(1/metresToPx), mass, color, 
+				balls.add(new Ball(xPos*(1/metresToPx), y*(1/metresToPx), newRadius*(1/metresToPx), mass, color,
 						new Motion(initialVelocityX, accelerationX),
 						new Motion(initialVelocityY, accelerationY),
 						energyLoss));
@@ -143,6 +146,26 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 			catch (InterruptedException ex) {}
 
 			for (Ball ball : balls) {
+				if(Game.CIRCULAR) {
+					double midX = (widthPx*(1/metresToPx))/2;
+					double midY = (heightPx*(1/metresToPx))/2;
+					double x = ball.getX();
+					double y = ball.getY();
+					double xLen = Math.max(x, midX) - Math.min(x, midX);
+					double yLen = Math.max(y, midY) - Math.min(y, midY);
+					double hyp = Math.sqrt((xLen*xLen)+(yLen*yLen));
+					double angle = Math.asin(yLen/hyp);
+					double xAcc = accelerationDueToGravity * Math.cos(angle);
+					double yAcc = accelerationDueToGravity * Math.sin(angle);
+					if (ball.getX() > (widthPx*(1/metresToPx))/2)
+						ball.getMotionX().setAcceleration(-xAcc);
+					else
+						ball.getMotionX().setAcceleration(xAcc);
+					if (ball.getY() > (heightPx*(1/metresToPx))/2)
+						ball.getMotionY().setAcceleration(-yAcc);
+					else
+						ball.getMotionY().setAcceleration(yAcc);
+				}
 				ballUtils.updatePosition(ball);
 			}
 			collisionDetector.detectCollisionsAndBoundary(balls);
@@ -197,12 +220,12 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		
+
 	}
 
 	@Override
@@ -212,43 +235,43 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		for (Ball ball : balls) {
 			motionUtils.applyForce(ball.getMotionX(), (x-ball.getX())/(widthPx*(1/metresToPx)), ball.getMass());
 			motionUtils.applyForce(ball.getMotionY(), (y-ball.getY())/(heightPx*(1/metresToPx)), ball.getMass());
-			//break; // REMOVE to affect all balls
+			break; // REMOVE to affect all balls
 		}
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		
+
 	}
-	
+
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		
+
 	}
-	
+
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		
+
 	}
-	
+
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent arg0) {
-		
+
 	}
 
 }

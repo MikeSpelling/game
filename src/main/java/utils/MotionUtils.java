@@ -29,7 +29,7 @@ public class MotionUtils {
 	public double bounce(Motion motion, double displacement, double boundary, double energyLossThroughBounce) {
 		double distancePastBoundary = displacement-boundary;
 		double velocityAsHitsBoundarySquared = (motion.getVelocity()*motion.getVelocity())-(2*motion.getAcceleration()*distancePastBoundary);
-		
+
 		if (velocityAsHitsBoundarySquared > 0) {
 			// Get velocity as it hits the boundary (U), working out whether
 			// sqrt should be positive or negative
@@ -48,11 +48,11 @@ public class MotionUtils {
 			motion.setVelocity(bouncedVelocity + (motion.getAcceleration()*timeTravellingPastBoundary));
 			// Calculate new displacement, setting to boundary if still within
 			displacement = boundary +
-				((bouncedVelocity)*timeTravellingPastBoundary) + 
+				((bouncedVelocity)*timeTravellingPastBoundary) +
 				((motion.getAcceleration()*timeTravellingPastBoundary*timeTravellingPastBoundary)/2);
 		}
 		else stopMotion(motion); // Cannot sqrt negative - something gone wrong?
-		
+
 		return displacement;
 	}
 
@@ -71,9 +71,9 @@ public class MotionUtils {
 		motion.setVelocity(0);
 		motion.setAcceleration(0);
 		motion.setStatus(Status.STOPPED);
-	}	
-	
-	public void collide(Motion motion1, double mass1, double radius1, Motion motion2, double mass2, double radius2, 
+	}
+
+	public void collide(Motion motion1, double mass1, double radius1, Motion motion2, double mass2, double radius2,
 			double energyLoss, double positionHit) {
 		double newVelocity1 = ( ((mass1-mass2) * motion1.getVelocity()) + (2*mass2*motion2.getVelocity()) )
 			/ (mass1+mass2);
