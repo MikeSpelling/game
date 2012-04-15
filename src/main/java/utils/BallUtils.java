@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.geom.Point2D;
 
 import models.Ball;
+import models.Motion.Status;
 
 
 /**
@@ -24,6 +25,26 @@ public class BallUtils {
 		this.motionUtils = motionUtils;
 	}
 	
+	
+	public void startMotion(Ball ball) {
+		ball.getMotionX().setAcceleration(ball.getMotionX().getInitialAcceleration());
+		ball.getMotionX().setStatus(Status.MOVING);
+		ball.getMotionX().setTimeLastUpdated(System.nanoTime());
+		
+		ball.getMotionY().setAcceleration(ball.getMotionY().getInitialAcceleration());
+		ball.getMotionY().setStatus(Status.MOVING);
+		ball.getMotionY().setTimeLastUpdated(System.nanoTime());
+	}
+	
+	public void stopMotion(Ball ball) {
+		ball.getMotionX().setAcceleration(0);
+		ball.getMotionX().setVelocity(0);
+		ball.getMotionX().setStatus(Status.STOPPED);
+		
+		ball.getMotionY().setAcceleration(0);
+		ball.getMotionY().setVelocity(0);
+		ball.getMotionY().setStatus(Status.STOPPED);
+	}
 
 	public void updatePosition(Ball ball) {
 		// Update and retrieve displacements if moving
@@ -139,6 +160,23 @@ public class BallUtils {
 		buffer.setColor(ball.getColor());
 		buffer.fillOval ((int)Math.round((ball.getX() - ball.getRadius())*scale), (int)Math.round((ball.getY() - ball.getRadius())*scale),
 				(int)Math.round((2 * ball.getRadius())*scale), (int)Math.round((2 * ball.getRadius())*scale));
+	}
+
+
+	public void applyAccelerationTowards(Ball ball, Point2D midpoint) {
+		double xLen = Math.abs(ball.getX() - midpoint.getX());
+		double yLen = Math.abs(ball.getY() - midpoint.getY());
+		double angle = Math.atan(yLen/xLen);
+		double xAcc = Game.ACCELERATION_DUE_TO_GRAVITY * Math.cos(angle);
+		double yAcc = Game.ACCELERATION_DUE_TO_GRAVITY * Math.sin(angle);
+		if (ball.getX() > midpoint.getX())
+			ball.getMotionX().setAcceleration(-xAcc);
+		else
+			ball.getMotionX().setAcceleration(xAcc);
+		if (ball.getY() > midpoint.getY())
+			ball.getMotionY().setAcceleration(-yAcc);
+		else
+			ball.getMotionY().setAcceleration(yAcc);
 	}
 
 }

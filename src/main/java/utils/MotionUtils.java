@@ -7,6 +7,8 @@ import models.Motion.Status;
 public class MotionUtils {
 
 
+	private static final int FORCE = 40;
+
 	public double updateDisplacement(Motion motion, double displacement) {
 		double time = (double)(System.nanoTime() - motion.getTimeLastUpdated())*(double)(0.000000001);
 		// Velocity = U at this point so S = Ut + (at^2)/2
@@ -57,7 +59,7 @@ public class MotionUtils {
 	}
 
 	public void applyForce(Motion motion, double force, double mass) {
-		motion.setVelocity((force/mass)*2);
+		motion.setVelocity((force/mass)*FORCE);
 		startMotion(motion);
 	}
 
