@@ -42,16 +42,8 @@ public class CollisionDetector {
 	}
 
 	public void detectCollisionsAndBoundary(ArrayList<Ball> balls) {
-		for (int i = 0; i < balls.size(); i++) {
-			Ball ball = balls.get(i);
-
-			// Detect collisions with other balls
-			for (int k = i+1; k < balls.size(); k++) {
-				Ball otherBall = balls.get(k);
-				if (ballUtils.contains(ball, otherBall)) {
-					ballUtils.collide(ball, otherBall);
-				}
-			}
+		detectCollisions(balls);
+		for (Ball ball : balls) {
 			detectBoundary(ball);
 		}
 	}
@@ -63,7 +55,7 @@ public class CollisionDetector {
 			// Detect collisions with other balls
 			for (int k = i+1; k < balls.size(); k++) {
 				Ball otherBall = balls.get(k);
-				if (ballUtils.contains(ball, otherBall)) {
+				if (ballUtils.overlap(ball, otherBall)) {
 					ballUtils.collide(ball, otherBall);
 					if(!Game.MUTED) collideAudio.play();
 				}

@@ -67,17 +67,17 @@ public class CollisionDetectorTest {
 	@Test
 	public void testDetectCollisions() throws Exception {
 		
-		when(ballUtils.contains(ball1, ball2)).thenReturn(true);
-		when(ballUtils.contains(ball1, ball3)).thenReturn(false);
-		when(ballUtils.contains(ball1, ball4)).thenReturn(false);
-		when(ballUtils.contains(ball1, ball5)).thenReturn(false);
+		when(ballUtils.overlap(ball1, ball2)).thenReturn(true);
+		when(ballUtils.overlap(ball1, ball3)).thenReturn(false);
+		when(ballUtils.overlap(ball1, ball4)).thenReturn(false);
+		when(ballUtils.overlap(ball1, ball5)).thenReturn(false);
 		
-		when(ballUtils.contains(eq(ball2), any(Ball.class))).thenReturn(true);
+		when(ballUtils.overlap(eq(ball2), any(Ball.class))).thenReturn(true);
 		
-		when(ballUtils.contains(ball3, ball4)).thenReturn(false);
-		when(ballUtils.contains(ball3, ball5)).thenReturn(true);
+		when(ballUtils.overlap(ball3, ball4)).thenReturn(false);
+		when(ballUtils.overlap(ball3, ball5)).thenReturn(true);
 		
-		when(ballUtils.contains(ball4, ball5)).thenReturn(false);
+		when(ballUtils.overlap(ball4, ball5)).thenReturn(false);
 
 		collisionDetector.detectCollisions(balls);
 		
@@ -272,17 +272,17 @@ public class CollisionDetectorTest {
 		when(ball5.getX()).thenReturn(1.0);
 		when(ball5.getRadius()).thenReturn(5.0);
 		
-		when(ballUtils.contains(ball1, ball2)).thenReturn(true);
-		when(ballUtils.contains(ball1, ball3)).thenReturn(false);
-		when(ballUtils.contains(ball1, ball4)).thenReturn(false);
-		when(ballUtils.contains(ball1, ball5)).thenReturn(false);
+		when(ballUtils.overlap(ball1, ball2)).thenReturn(true);
+		when(ballUtils.overlap(ball1, ball3)).thenReturn(false);
+		when(ballUtils.overlap(ball1, ball4)).thenReturn(false);
+		when(ballUtils.overlap(ball1, ball5)).thenReturn(false);
 		
-		when(ballUtils.contains(eq(ball2), any(Ball.class))).thenReturn(true);
+		when(ballUtils.overlap(eq(ball2), any(Ball.class))).thenReturn(true);
 		
-		when(ballUtils.contains(ball3, ball4)).thenReturn(false);
-		when(ballUtils.contains(ball3, ball5)).thenReturn(true);
+		when(ballUtils.overlap(ball3, ball4)).thenReturn(false);
+		when(ballUtils.overlap(ball3, ball5)).thenReturn(true);
 		
-		when(ballUtils.contains(ball4, ball5)).thenReturn(false);
+		when(ballUtils.overlap(ball4, ball5)).thenReturn(false);
 
 		collisionDetector.detectCollisionsAndBoundary(balls);
 		

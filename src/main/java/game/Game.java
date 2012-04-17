@@ -115,7 +115,7 @@ public class Game extends Applet implements Runnable, KeyListener, MouseListener
 		AudioClip bounceAudio = getAudioClip(getCodeBase(), "bounce.au");
 		backgroundImage = getImage(getCodeBase(), "land.GIF");
 
-		collisionDetector =	new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom,
+		collisionDetector = new CollisionDetector(0, energyLossTop, heightMetres, energyLossBottom,
 				0, energyLossLeft, widthMetres, energyLossRight, ballUtils, bounceAudio, bounceAudio);
 
 		bufferImage = createImage(widthPx, heightPx);

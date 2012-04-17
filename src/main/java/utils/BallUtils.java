@@ -54,7 +54,7 @@ public class BallUtils {
 			ball.setY(motionUtils.updateDisplacement(ball.getMotionY(), ball.getY()));
 	}
 
-	public boolean contains(Ball ball1, Ball ball2) {
+	public boolean overlap(Ball ball1, Ball ball2) {
 		// Calculate length between balls
 		double width = Math.abs(ball1.getX() - ball2.getX());
 		double height = Math.abs(ball1.getY() - ball2.getY());
@@ -161,7 +161,6 @@ public class BallUtils {
 		buffer.fillOval ((int)Math.round((ball.getX() - ball.getRadius())*scale), (int)Math.round((ball.getY() - ball.getRadius())*scale),
 				(int)Math.round((2 * ball.getRadius())*scale), (int)Math.round((2 * ball.getRadius())*scale));
 	}
-
 
 	public void applyAccelerationTowards(Ball ball, Point2D midpoint) {
 		double xLen = Math.abs(ball.getX() - midpoint.getX());
